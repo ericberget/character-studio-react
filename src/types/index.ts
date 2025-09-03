@@ -21,7 +21,7 @@ export interface GenerationConfig {
   poses: CharacterPose[];
 }
 
-export type ArtStyle = 
+export type ArtStyle =
   | 'realistic'
   | 'realistic-painting-3'
   | 'sketch'
@@ -31,7 +31,8 @@ export type ArtStyle =
   | 'pixel-art'
   | 'comic-style'
   | 'vintage-comic'
-  | 'crafty-textured';
+  | 'crafty-textured'
+  | 'custom';
 
 export interface ApiResponse {
   success: boolean;

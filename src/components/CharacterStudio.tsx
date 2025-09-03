@@ -5,6 +5,7 @@ import { PoseSelector } from './PoseSelector';
 import { StyleSelector } from './StyleSelector';
 import { GenerationProgress } from './GenerationProgress';
 import { CharacterGrid } from './CharacterGrid';
+import { CustomReferenceUpload } from './CustomReferenceUpload';
 import { generateCharacterImage, fileToBase64 } from '../services/gemini';
 import { defaultPoses, artStyles } from '../data/poses';
 import type { GeneratedCharacter, GenerationProgress as ProgressType, ArtStyle } from '../types';
@@ -21,6 +22,8 @@ export const CharacterStudio: React.FC = () => {
   const [additionalDescription, setAdditionalDescription] = useState('');
 
   const [generatedCharacters, setGeneratedCharacters] = useState<GeneratedCharacter[]>([]);
+  const [customStyles, setCustomStyles] = useState<Array<{name: string, image: string}>>([]);
+  const [customPoses, setCustomPoses] = useState<Array<{name: string, image: string}>>([]);
   const [progress, setProgress] = useState<ProgressType>({
     current: 0,
     total: 0,
@@ -61,6 +64,17 @@ export const CharacterStudio: React.FC = () => {
     });
   }, []);
 
+  const handleCustomStyleSelect = useCallback((imageUrl: string, styleName: string) => {
+    setCustomStyles(prev => [...prev, { name: styleName, image: imageUrl }]);
+    setArtStyle('custom'); // Set to custom style
+  }, []);
+
+  const handleCustomPoseSelect = useCallback((imageUrl: string, poseName: string) => {
+    setCustomPoses(prev => [...prev, { name: poseName, image: imageUrl }]);
+    // Add custom pose to selected poses
+    setSelectedPoses(prev => [...prev, `custom-${poseName}`]);
+  }, []);
+
   const generateCharacterSet = async () => {
     if (!referenceImage) {
       showMessage('Please upload a reference image of your character', 'error');
@@ -79,6 +93,7 @@ export const CharacterStudio: React.FC = () => {
     }
 
     const posesToGenerate = defaultPoses.filter(pose => selectedPoses.includes(pose.id));
+    const customPosesToGenerate = customPoses.filter(pose => selectedPoses.includes(`custom-${pose.name}`));
     
     setProgress({
       current: 0,
@@ -94,8 +109,10 @@ export const CharacterStudio: React.FC = () => {
       const referenceBase64 = await fileToBase64(referenceImage);
       const newCharacters: GeneratedCharacter[] = [];
 
-      for (let i = 0; i < posesToGenerate.length; i++) {
-        const pose = posesToGenerate[i];
+      const allPoses = [...posesToGenerate, ...customPosesToGenerate.map(cp => ({ id: `custom-${cp.name}`, name: cp.name, description: `Custom pose: ${cp.name}`, prompt: `custom pose: ${cp.name}`, emoji: '🎨' }))];
+      
+      for (let i = 0; i < allPoses.length; i++) {
+        const pose = allPoses[i];
         
         setProgress(prev => ({
           ...prev,
@@ -105,7 +122,8 @@ export const CharacterStudio: React.FC = () => {
 
         // Create detailed prompt for character generation
         const selectedStyle = artStyles.find(s => s.value === artStyle);
-        const stylePrompt = selectedStyle?.stylePrompt || `${artStyle} style`;
+        const customStyle = customStyles.find(s => s.name === artStyle);
+        const stylePrompt = customStyle ? `custom style based on reference image` : (selectedStyle?.stylePrompt || `${artStyle} style`);
         const posePrompt = pose.prompt;
         const additionalPrompt = additionalDescription ? `, ${additionalDescription}` : '';
         
@@ -320,6 +338,14 @@ export const CharacterStudio: React.FC = () => {
               maxPoses={6}
               className="mt-8"
             />
+
+            {/* Custom Reference Upload */}
+            <div className="flex justify-center mt-6">
+              <CustomReferenceUpload
+                onCustomStyleSelect={handleCustomStyleSelect}
+                onCustomPoseSelect={handleCustomPoseSelect}
+              />
+            </div>
 
             {/* Generate Button */}
                           <button
