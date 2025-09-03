@@ -5,12 +5,11 @@ import { PoseSelector } from './PoseSelector';
 import { StyleSelector } from './StyleSelector';
 import { GenerationProgress } from './GenerationProgress';
 import { CharacterGrid } from './CharacterGrid';
-import { UsageDisplay } from './UsageDisplay';
 import { generateCharacterImage, fileToBase64 } from '../services/gemini';
 import { defaultPoses, artStyles } from '../data/poses';
 import type { GeneratedCharacter, GenerationProgress as ProgressType, ArtStyle } from '../types';
 import { cn } from '../utils/cn';
-import { canGenerateImage, incrementUsage } from '../utils/usageTracker';
+import { canGenerateImage, incrementUsage, getTodayUsage, getRemainingImages, getNextResetTime } from '../utils/usageTracker';
 
 export const CharacterStudio: React.FC = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -226,6 +225,20 @@ export const CharacterStudio: React.FC = () => {
               <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
               Tips and Tricks
             </button>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                // Show usage info
+                const todayUsage = getTodayUsage();
+                const remainingImages = getRemainingImages();
+                const nextReset = getNextResetTime();
+                alert(`Daily Usage:\n\n• ${todayUsage}/25 images used today\n• ${remainingImages} images remaining\n• Resets at: ${nextReset}\n\nYou can generate up to 25 images per day.`);
+              }}
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+            >
+              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+              Usage
+            </button>
           </div>
         </div>
       )}
@@ -255,9 +268,6 @@ export const CharacterStudio: React.FC = () => {
               </p>
             </div>
                     )}
-
-          {/* Daily Usage Display */}
-          <UsageDisplay />
 
           <div className="space-y-8">
             {/* Reference Image Upload and Additional Description - Side by Side */}
