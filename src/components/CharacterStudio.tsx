@@ -5,10 +5,12 @@ import { PoseSelector } from './PoseSelector';
 import { StyleSelector } from './StyleSelector';
 import { GenerationProgress } from './GenerationProgress';
 import { CharacterGrid } from './CharacterGrid';
+import { UsageDisplay } from './UsageDisplay';
 import { generateCharacterImage, fileToBase64 } from '../services/gemini';
 import { defaultPoses, artStyles } from '../data/poses';
 import type { GeneratedCharacter, GenerationProgress as ProgressType, ArtStyle } from '../types';
 import { cn } from '../utils/cn';
+import { canGenerateImage, incrementUsage } from '../utils/usageTracker';
 
 export const CharacterStudio: React.FC = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -71,6 +73,12 @@ export const CharacterStudio: React.FC = () => {
       return;
     }
 
+    // Check daily usage limit
+    if (!canGenerateImage()) {
+      showMessage('Daily limit reached! Come back tomorrow for more generations.', 'error');
+      return;
+    }
+
     const posesToGenerate = defaultPoses.filter(pose => selectedPoses.includes(pose.id));
     
     setProgress({
@@ -108,6 +116,8 @@ export const CharacterStudio: React.FC = () => {
           const result = await generateCharacterImage(fullPrompt, referenceBase64, referenceImage.type);
 
           if (result.success && result.imageUrl) {
+            // Increment usage for successful generation
+            incrementUsage();
             newCharacters.push({
               pose,
               imageUrl: result.imageUrl,
@@ -244,9 +254,10 @@ export const CharacterStudio: React.FC = () => {
                 Copy env.example to .env and add your API key.
               </p>
             </div>
-          )}
-          
+                    )}
 
+          {/* Daily Usage Display */}
+          <UsageDisplay />
 
           <div className="space-y-8">
             {/* Reference Image Upload and Additional Description - Side by Side */}
