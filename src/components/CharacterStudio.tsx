@@ -165,7 +165,7 @@ export const CharacterStudio: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-950" style={{
-      backgroundImage: 'url(/src/assets/bg.jpg)',
+      backgroundImage: 'url(/bg.jpg)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
@@ -224,7 +224,7 @@ export const CharacterStudio: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <img 
-            src="/src/assets/logo.png" 
+            src="/logo.png" 
             alt="Character Studio" 
             className="mx-auto mb-6 max-w-md md:max-w-lg"
           />
