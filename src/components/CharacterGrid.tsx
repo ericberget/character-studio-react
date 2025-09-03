@@ -123,14 +123,30 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
             </div>
             
             <div className="p-4">
-              <div className="mb-2">
-                <h3 className="text-lg font-medium text-white header-font">
-                  {character.pose.name}
-                </h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() =>
+                    downloadImage(
+                      character.imageUrl,
+                      `character-${character.pose.name.toLowerCase().replace(/\s+/g, '-')}.jpg`
+                    )
+                  }
+                  className="flex-1 text-gray-900 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
+                  style={{ backgroundColor: '#efd841' }}
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </button>
+                <button
+                  onClick={() => {
+                    // Remove Background functionality - coming soon
+                    alert('Remove Background feature coming soon!');
+                  }}
+                  className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 transition-colors duration-200 text-sm"
+                >
+                  Remove Background
+                </button>
               </div>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                {character.pose.description}
-              </p>
             </div>
           </div>
         ))}
@@ -169,7 +185,6 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{selectedImage.pose.emoji}</span>
                     <h3 className="text-xl font-medium text-white header-font">
                       {selectedImage.pose.name}
                     </h3>
@@ -186,13 +201,20 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                       style={{ backgroundColor: '#efd841' }}
                     >
                       <Download className="w-4 h-4" />
-                      Download JPG
+                      Download
+                    </button>
+                    <button
+                      onClick={() => {
+                        // Remove Background functionality - coming soon
+                        alert('Remove Background feature coming soon!');
+                      }}
+                      className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 transition-colors duration-200"
+                    >
+                      Remove Background
                     </button>
                   </div>
                 </div>
-                <p className="text-gray-400 leading-relaxed">
-                  {selectedImage.pose.description}
-                </p>
+
               </div>
             </div>
           </div>

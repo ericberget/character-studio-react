@@ -20,7 +20,7 @@ export const GenerationProgress: React.FC<GenerationProgressProps> = ({
       <div className="glass-card p-8 max-w-md w-full mx-4">
         <div className="text-center space-y-6">
           <div className="flex justify-center">
-            <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+            <Loader2 className="w-12 h-12 text-yellow-400 animate-spin" />
           </div>
           
           <div>
@@ -33,7 +33,7 @@ export const GenerationProgress: React.FC<GenerationProgressProps> = ({
           <div className="space-y-2">
             <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+                className="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 transition-all duration-500"
                 style={{ width: `${percentage}%` }}
               />
             </div>

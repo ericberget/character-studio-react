@@ -10,7 +10,7 @@ import { generateCharacterImage, fileToBase64 } from '../services/gemini';
 import { defaultPoses, artStyles } from '../data/poses';
 import type { GeneratedCharacter, GenerationProgress as ProgressType, ArtStyle } from '../types';
 import { cn } from '../utils/cn';
-import { canGenerateImage, incrementUsage, getTodayUsage, getRemainingImages, getNextResetTime } from '../utils/usageTracker';
+
 
 export const CharacterStudio: React.FC = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -87,11 +87,11 @@ export const CharacterStudio: React.FC = () => {
       return;
     }
 
-    // Check daily usage limit
-    if (!canGenerateImage()) {
-      showMessage('Daily limit reached! Come back tomorrow for more generations.', 'error');
-      return;
-    }
+    // Daily limit disabled for admin
+    // if (!canGenerateImage()) {
+    //   showMessage('Daily limit reached! Come back tomorrow for more generations.', 'error');
+    //   return;
+    // }
 
     const posesToGenerate = defaultPoses.filter(pose => selectedPoses.includes(pose.id));
     const customPosesToGenerate = customPoses.filter(pose => selectedPoses.includes(`custom-${pose.name}`));
@@ -134,8 +134,8 @@ export const CharacterStudio: React.FC = () => {
           const result = await generateCharacterImage(fullPrompt, referenceBase64, referenceImage.type);
 
           if (result.success && result.imageUrl) {
-            // Increment usage for successful generation
-            incrementUsage();
+            // Usage tracking disabled for admin
+            // incrementUsage();
             newCharacters.push({
               pose,
               imageUrl: result.imageUrl,
@@ -247,20 +247,7 @@ export const CharacterStudio: React.FC = () => {
               <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
               Tips and Tricks
             </button>
-            <button
-              onClick={() => {
-                setIsMenuOpen(false);
-                // Show usage info
-                const todayUsage = getTodayUsage();
-                const remainingImages = getRemainingImages();
-                const nextReset = getNextResetTime();
-                alert(`Daily Usage:\n\n• ${todayUsage}/25 images used today\n• ${remainingImages} images remaining\n• Resets at: ${nextReset}\n\nYou can generate up to 25 images per day.`);
-              }}
-              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
-            >
-              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-              Usage
-            </button>
+
           </div>
         </div>
       )}
