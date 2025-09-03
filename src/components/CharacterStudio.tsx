@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { AlertCircle, CheckCircle, Sparkles, X } from 'lucide-react';
+import { AlertCircle, CheckCircle, Sparkles, X, Info } from 'lucide-react';
 import { ImageUpload } from './ImageUpload';
 import { PoseSelector } from './PoseSelector';
 import { StyleSelector } from './StyleSelector';
@@ -25,6 +25,7 @@ export const CharacterStudio: React.FC = () => {
   const [customStyles, setCustomStyles] = useState<Array<{name: string, image: string}>>([]);
   const [customPoses, setCustomPoses] = useState<Array<{name: string, image: string}>>([]);
   const [showCustomUpload, setShowCustomUpload] = useState(false);
+  const [showArtDirectionTips, setShowArtDirectionTips] = useState(false);
   const [progress, setProgress] = useState<ProgressType>({
     current: 0,
     total: 0,
@@ -65,8 +66,8 @@ export const CharacterStudio: React.FC = () => {
     });
   }, []);
 
-  const handleCustomStyleSelect = useCallback((imageUrl: string, styleName: string) => {
-    setCustomStyles(prev => [...prev, { name: styleName, image: imageUrl }]);
+  const handleCustomStyleSelect = useCallback((imageUrl: string, _styleName: string) => {
+    setCustomStyles(prev => [...prev, { name: 'Custom Style Reference', image: imageUrl }]);
     setArtStyle('custom'); // Set to custom style
   }, []);
 
@@ -296,11 +297,20 @@ export const CharacterStudio: React.FC = () => {
 
               {/* Additional Description and Art Style */}
               <div className="space-y-6">
-                {/* Additional Description */}
+                {/* Art Direction */}
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-3 uppercase tracking-wide">
-                    Additional Description (Optional)
-                  </label>
+                  <div className="flex items-center justify-between mb-3">
+                    <label htmlFor="description" className="text-sm font-medium text-gray-300 uppercase tracking-wide">
+                      Art Direction
+                    </label>
+                    <button
+                      onClick={() => setShowArtDirectionTips(true)}
+                      className="text-gray-400 hover:text-yellow-400 transition-colors duration-200"
+                      title="Art Direction Tips"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                  </div>
                   <textarea
                     id="description"
                     value={additionalDescription}
@@ -416,6 +426,54 @@ export const CharacterStudio: React.FC = () => {
             setShowCustomUpload(false);
           }}
         />
+      )}
+
+      {/* Art Direction Tips Modal */}
+      {showArtDirectionTips && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-semibold">Art Direction Guide</h3>
+              <button
+                onClick={() => setShowArtDirectionTips(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <p className="text-gray-300 text-sm leading-relaxed">
+                Add nuance to camera angles, lighting, and composition to enhance your character's visual impact.
+              </p>
+              
+              <div className="bg-gray-800/50 rounded-lg p-4">
+                <h4 className="text-yellow-400 font-medium mb-3">Examples:</h4>
+                <div className="grid grid-cols-1 gap-2 text-sm">
+                  <div className="text-gray-300">• "View from below, hero shot"</div>
+                  <div className="text-gray-300">• "Skyscrapers in the background"</div>
+                  <div className="text-gray-300">• "Golden hour lighting"</div>
+                  <div className="text-gray-300">• "Urban street scene"</div>
+                  <div className="text-gray-300">• "Studio lighting, clean background"</div>
+                  <div className="text-gray-300">• "Dramatic shadows"</div>
+                  <div className="text-gray-300">• "Close-up portrait"</div>
+                  <div className="text-gray-300">• "Full body shot"</div>
+                  <div className="text-gray-300">• "Action pose, dynamic angle"</div>
+                  <div className="text-gray-300">• "Cinematic composition"</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setShowArtDirectionTips(false)}
+                className="px-6 py-2 bg-yellow-500 text-gray-900 rounded-lg font-medium hover:bg-yellow-400 transition-colors"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -17,7 +17,6 @@ export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   const [uploadType, setUploadType] = useState<'style' | 'pose' | null>(null);
-  const [customName, setCustomName] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string>('');
 
   const handleFileSelect = useCallback((file: File) => {
@@ -32,15 +31,15 @@ export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
   }, []);
 
   const handleSubmit = () => {
-    if (uploadType && customName && previewUrl) {
+    if (uploadType && previewUrl) {
+      const defaultName = uploadType === 'style' ? 'Custom Style Reference' : 'Custom Pose';
       if (uploadType === 'style') {
-        onCustomStyleSelect(previewUrl, customName);
+        onCustomStyleSelect(previewUrl, defaultName);
       } else {
-        onCustomPoseSelect(previewUrl, customName);
+        onCustomPoseSelect(previewUrl, defaultName);
       }
       // Reset form
       setUploadType(null);
-      setCustomName('');
       setPreviewUrl('');
       if (onClose) {
         onClose();
@@ -52,7 +51,6 @@ export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
 
   const handleCancel = () => {
     setUploadType(null);
-    setCustomName('');
     setPreviewUrl('');
     if (onClose) {
       onClose();
@@ -159,19 +157,7 @@ export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
                   </label>
                 </div>
 
-                {/* Name Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    {uploadType === 'style' ? 'Style' : 'Pose'} Name
-                  </label>
-                  <input
-                    type="text"
-                    value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
-                    placeholder={`Enter ${uploadType === 'style' ? 'style' : 'pose'} name...`}
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-yellow-400 focus:outline-none"
-                  />
-                </div>
+
 
                 {/* Action Buttons */}
                 <div className="flex gap-3 pt-4">
@@ -183,7 +169,7 @@ export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
                   </button>
                   <button
                     onClick={handleSubmit}
-                    disabled={!customName || !previewUrl}
+                    disabled={!previewUrl}
                     className="flex-1 px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg font-medium hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Add Reference

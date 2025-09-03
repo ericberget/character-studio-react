@@ -50,7 +50,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
           {onDownloadAll && (
             <button 
               onClick={onDownloadAll} 
-              className="bg-white text-gray-900 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
+              className="btn-action"
             >
               <Download className="w-5 h-5" />
               Download All
@@ -59,7 +59,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
           {onGenerateNew && (
             <button 
               onClick={onGenerateNew} 
-              className="bg-white text-gray-900 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
+              className="btn-action"
             >
               <RotateCcw className="w-5 h-5" />
               Generate New
@@ -131,7 +131,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                       `character-${character.pose.name.toLowerCase().replace(/\s+/g, '-')}.jpg`
                     )
                   }
-                  className="flex-1 text-gray-900 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
+                  className="flex-1 text-gray-900 px-4 py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium hover:scale-105 active:scale-95"
                   style={{ backgroundColor: '#efd841' }}
                 >
                   <Download className="w-4 h-4" />
@@ -142,7 +142,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                     // Remove Background functionality - coming soon
                     alert('Remove Background feature coming soon!');
                   }}
-                  className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 transition-colors duration-200 text-sm"
+                  className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 text-sm hover:scale-105 active:scale-95"
                 >
                   Remove Background
                 </button>
@@ -197,7 +197,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                           `character-${selectedImage.pose.name.toLowerCase().replace(/\s+/g, '-')}.jpg`
                         )
                       }
-                      className="text-gray-900 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 font-medium"
+                      className="text-gray-900 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 font-medium hover:scale-105 active:scale-95"
                       style={{ backgroundColor: '#efd841' }}
                     >
                       <Download className="w-4 h-4" />
@@ -208,7 +208,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                         // Remove Background functionality - coming soon
                         alert('Remove Background feature coming soon!');
                       }}
-                      className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 transition-colors duration-200"
+                      className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 hover:scale-105 active:scale-95"
                     >
                       Remove Background
                     </button>
