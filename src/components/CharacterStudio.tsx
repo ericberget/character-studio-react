@@ -24,6 +24,7 @@ export const CharacterStudio: React.FC = () => {
   const [generatedCharacters, setGeneratedCharacters] = useState<GeneratedCharacter[]>([]);
   const [customStyles, setCustomStyles] = useState<Array<{name: string, image: string}>>([]);
   const [customPoses, setCustomPoses] = useState<Array<{name: string, image: string}>>([]);
+  const [showCustomUpload, setShowCustomUpload] = useState(false);
   const [progress, setProgress] = useState<ProgressType>({
     current: 0,
     total: 0,
@@ -325,6 +326,9 @@ export const CharacterStudio: React.FC = () => {
                     styles={artStyles}
                     selectedStyle={artStyle}
                     onStyleSelect={(styleValue) => setArtStyle(styleValue as ArtStyle)}
+                    onCustomStyleUpload={() => {
+                      setShowCustomUpload(true);
+                    }}
                   />
                 </div>
               </div>
@@ -335,17 +339,14 @@ export const CharacterStudio: React.FC = () => {
               poses={defaultPoses}
               selectedPoses={selectedPoses}
               onPoseToggle={handlePoseToggle}
+              onCustomPoseUpload={() => {
+                setShowCustomUpload(true);
+              }}
               maxPoses={6}
               className="mt-8"
             />
 
-            {/* Custom Reference Upload */}
-            <div className="flex justify-center mt-6">
-              <CustomReferenceUpload
-                onCustomStyleSelect={handleCustomStyleSelect}
-                onCustomPoseSelect={handleCustomPoseSelect}
-              />
-            </div>
+
 
             {/* Generate Button */}
                           <button
@@ -408,6 +409,20 @@ export const CharacterStudio: React.FC = () => {
           isVisible={progress.isLoading}
         />
       </div>
+
+      {/* Custom Reference Upload Modal */}
+      {showCustomUpload && (
+        <CustomReferenceUpload
+          onCustomStyleSelect={(imageUrl, styleName) => {
+            handleCustomStyleSelect(imageUrl, styleName);
+            setShowCustomUpload(false);
+          }}
+          onCustomPoseSelect={(imageUrl, poseName) => {
+            handleCustomPoseSelect(imageUrl, poseName);
+            setShowCustomUpload(false);
+          }}
+        />
+      )}
     </div>
   );
 };
