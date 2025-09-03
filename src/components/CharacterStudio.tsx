@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { AlertCircle, CheckCircle, Sparkles, Menu, X } from 'lucide-react';
+import React, { useState, useCallback, useRef } from 'react';
+import { AlertCircle, CheckCircle, Sparkles, X } from 'lucide-react';
 import { ImageUpload } from './ImageUpload';
 import { PoseSelector } from './PoseSelector';
 import { StyleSelector } from './StyleSelector';
@@ -16,7 +16,7 @@ export const CharacterStudio: React.FC = () => {
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [selectedPoses, setSelectedPoses] = useState<string[]>(['neutral', 'arms-crossed', 'friendly-wave']);
-  const [artStyle, setArtStyle] = useState<ArtStyle>('vectorillustration');
+  const [artStyle, setArtStyle] = useState<ArtStyle>('realistic');
   const [additionalDescription, setAdditionalDescription] = useState('');
 
   const [generatedCharacters, setGeneratedCharacters] = useState<GeneratedCharacter[]>([]);
