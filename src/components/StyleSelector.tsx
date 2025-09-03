@@ -14,6 +14,7 @@ interface StyleSelectorProps {
   selectedStyle: string;
   onStyleSelect: (styleValue: string) => void;
   onCustomStyleUpload?: () => void;
+  customStyles?: Array<{name: string, image: string}>;
   className?: string;
 }
 
@@ -22,6 +23,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
   selectedStyle,
   onStyleSelect,
   onCustomStyleUpload,
+  customStyles = [],
   className
 }) => {
   const [enlargedStyle, setEnlargedStyle] = useState<ArtStyle | null>(null);
@@ -85,6 +87,40 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
                   <div className="text-xs font-medium text-gray-300">
                     {style.label}
                   </div>
+                </div>
+              )}
+            </button>
+          );
+        })}
+        
+        {/* Custom Style References */}
+        {customStyles.map((customStyle, index) => {
+          const isSelected = selectedStyle === customStyle.name;
+          return (
+            <button
+              key={`custom-${index}`}
+              onClick={() => onStyleSelect(customStyle.name)}
+              className={cn(
+                "group relative rounded-lg border-2 transition-all duration-200 overflow-hidden",
+                "hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
+                "aspect-square",
+                isSelected && "border-yellow-400 shadow-lg shadow-yellow-500/25",
+                !isSelected && "border-gray-700 hover:border-gray-500"
+              )}
+            >
+              <img 
+                src={customStyle.image} 
+                alt={customStyle.name}
+                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+              />
+              {/* Style Reference Label */}
+              <div className="absolute top-0 left-0 right-0 bg-black/70 text-white text-xs font-medium px-2 py-1">
+                Style Reference
+              </div>
+              {/* Selection indicator */}
+              {isSelected && (
+                <div className="absolute top-2 right-2 bg-yellow-400 text-gray-900 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ backgroundColor: '#efd841' }}>
+                  ✓
                 </div>
               )}
             </button>

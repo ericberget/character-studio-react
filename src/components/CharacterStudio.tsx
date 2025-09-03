@@ -189,6 +189,9 @@ export const CharacterStudio: React.FC = () => {
   const handleGenerateNew = () => {
     setGeneratedCharacters([]);
     setMessage({ text: '', type: null });
+    // Clear custom references (they are temporary)
+    setCustomStyles([]);
+    setCustomPoses([]);
   };
 
   return (
@@ -329,6 +332,7 @@ export const CharacterStudio: React.FC = () => {
                     onCustomStyleUpload={() => {
                       setShowCustomUpload(true);
                     }}
+                    customStyles={customStyles}
                   />
                 </div>
               </div>
@@ -342,6 +346,7 @@ export const CharacterStudio: React.FC = () => {
               onCustomPoseUpload={() => {
                 setShowCustomUpload(true);
               }}
+              customPoses={customPoses}
               maxPoses={6}
               className="mt-8"
             />
@@ -369,7 +374,7 @@ export const CharacterStudio: React.FC = () => {
                 <div className="relative flex items-center justify-center">
                   <Sparkles className="w-6 h-6 mr-3" />
                   <span className="text-lg font-bold">
-                    {progress.isLoading ? 'Generating...' : 'Generate Character Set'}
+                    {progress.isLoading ? 'Generating...' : 'Generate Character'}
                   </span>
                 </div>
               </button>

@@ -8,6 +8,7 @@ interface PoseSelectorProps {
   selectedPoses: string[];
   onPoseToggle: (poseId: string) => void;
   onCustomPoseUpload?: () => void;
+  customPoses?: Array<{name: string, image: string}>;
   maxPoses?: number;
   className?: string;
 }
@@ -17,6 +18,7 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
   selectedPoses,
   onPoseToggle,
   onCustomPoseUpload,
+  customPoses = [],
   maxPoses = 6,
   className
 }) => {
@@ -76,6 +78,45 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
                   <div className="text-xs font-medium text-gray-300">
                     {pose.name}
                   </div>
+                </div>
+              )}
+            </button>
+          );
+        })}
+        
+        {/* Custom Pose References */}
+        {customPoses.map((customPose, index) => {
+          const poseId = `custom-${customPose.name}`;
+          const isSelected = selectedPoses.includes(poseId);
+          const isDisabled = !isSelected && selectedPoses.length >= maxPoses;
+          
+          return (
+            <button
+              key={`custom-${index}`}
+              onClick={() => onPoseToggle(poseId)}
+              disabled={isDisabled}
+              className={cn(
+                "group relative rounded-lg border-2 transition-all duration-200 overflow-hidden",
+                "hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
+                "aspect-square",
+                isSelected && "border-yellow-400 shadow-lg shadow-yellow-500/25",
+                !isSelected && !isDisabled && "border-gray-700 hover:border-gray-500",
+                isDisabled && "border-gray-800 opacity-50 cursor-not-allowed"
+              )}
+            >
+              <img 
+                src={customPose.image} 
+                alt={customPose.name}
+                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+              />
+              {/* Pose Reference Label */}
+              <div className="absolute top-0 left-0 right-0 bg-black/70 text-white text-xs font-medium px-2 py-1">
+                Pose Reference
+              </div>
+              {/* Selection indicator */}
+              {isSelected && (
+                <div className="absolute top-2 right-2 bg-yellow-400 text-gray-900 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ backgroundColor: '#efd841' }}>
+                  ✓
                 </div>
               )}
             </button>
