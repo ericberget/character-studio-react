@@ -413,6 +413,8 @@ export const CharacterStudio: React.FC = () => {
       {/* Custom Reference Upload Modal */}
       {showCustomUpload && (
         <CustomReferenceUpload
+          isOpen={showCustomUpload}
+          onClose={() => setShowCustomUpload(false)}
           onCustomStyleSelect={(imageUrl, styleName) => {
             handleCustomStyleSelect(imageUrl, styleName);
             setShowCustomUpload(false);

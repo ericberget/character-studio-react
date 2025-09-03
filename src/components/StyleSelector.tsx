@@ -98,7 +98,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
             className="aspect-square rounded-lg border-2 border-dashed border-yellow-400 hover:border-yellow-300 transition-colors duration-200 flex flex-col items-center justify-center group"
           >
             <Plus className="w-8 h-8 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-200" />
-            <span className="text-xs text-gray-400 mt-2">Add Style</span>
+            <span className="text-xs text-gray-400 mt-2">Custom Style Reference</span>
           </button>
         )}
       </div>

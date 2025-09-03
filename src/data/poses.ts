@@ -80,6 +80,14 @@ export const defaultPoses: CharacterPose[] = [
     prompt: 'sitting at computer typing pose, focused on screen, office work setting',
     emoji: '💻',
     image: '/poses/square-typing-on-computer.jpg'
+  },
+  {
+    id: 'over-the-shoulder',
+    name: 'Over the Shoulder',
+    description: 'Looking over the shoulder with a casual, engaging pose',
+    prompt: 'over the shoulder pose, looking back, casual engaging expression, relaxed stance',
+    emoji: '👀',
+    image: '/poses/square-over-the-shoulder.jpg'
   }
 ];
 

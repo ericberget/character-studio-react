@@ -4,13 +4,18 @@ import { Upload, X, Image as ImageIcon } from 'lucide-react';
 interface CustomReferenceUploadProps {
   onCustomStyleSelect: (imageUrl: string, styleName: string) => void;
   onCustomPoseSelect: (imageUrl: string, poseName: string) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
   onCustomStyleSelect,
-  onCustomPoseSelect
+  onCustomPoseSelect,
+  isOpen: externalIsOpen,
+  onClose
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   const [uploadType, setUploadType] = useState<'style' | 'pose' | null>(null);
   const [customName, setCustomName] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string>('');
@@ -37,7 +42,11 @@ export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
       setUploadType(null);
       setCustomName('');
       setPreviewUrl('');
-      setIsOpen(false);
+      if (onClose) {
+        onClose();
+      } else {
+        setInternalIsOpen(false);
+      }
     }
   };
 
@@ -45,19 +54,25 @@ export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
     setUploadType(null);
     setCustomName('');
     setPreviewUrl('');
-    setIsOpen(false);
+    if (onClose) {
+      onClose();
+    } else {
+      setInternalIsOpen(false);
+    }
   };
 
   return (
     <>
-      {/* Upload Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-colors duration-200"
-      >
-        <Upload className="w-4 h-4" />
-        <span className="text-sm">Upload Custom Reference</span>
-      </button>
+      {/* Upload Button - Only show if not externally controlled */}
+      {externalIsOpen === undefined && (
+        <button
+          onClick={() => setInternalIsOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-colors duration-200"
+        >
+          <Upload className="w-4 h-4" />
+          <span className="text-sm">Upload Custom Reference</span>
+        </button>
+      )}
 
       {/* Modal */}
       {isOpen && (
