@@ -145,16 +145,16 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
         <div className="flex justify-center">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-gray-300 transition-colors duration-200 text-sm"
+            className="flex items-center gap-2 px-6 py-3 text-gray-300 hover:text-white transition-all duration-200 text-sm font-medium border border-gray-600 hover:border-gray-500 rounded-lg hover:bg-gray-800/50 hover:scale-105 active:scale-95"
           >
             {isExpanded ? (
               <>
-                <ChevronUp className="w-4 h-4" />
+                <ChevronUp className="w-5 h-5" />
                 Show Less Poses
               </>
             ) : (
               <>
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="w-5 h-5" />
                 View More Poses ({poses.length - 12} more)
               </>
             )}
