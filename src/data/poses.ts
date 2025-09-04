@@ -88,6 +88,54 @@ export const defaultPoses: CharacterPose[] = [
     prompt: 'over the shoulder pose, looking back, casual engaging expression, relaxed stance',
     emoji: '👀',
     image: '/poses/square-over-the-shoulder.jpg'
+  },
+  {
+    id: 'sitting-listening',
+    name: 'Sitting Listening',
+    description: 'Sitting and listening attentively',
+    prompt: 'sitting pose listening attentively, engaged expression, focused attention',
+    emoji: '👂',
+    image: '/poses/square-sitting-listening.jpg'
+  },
+  {
+    id: 'sitting-talking',
+    name: 'Sitting Talking',
+    description: 'Sitting and talking or presenting',
+    prompt: 'sitting pose talking, presenting gesture, engaged conversation',
+    emoji: '💬',
+    image: '/poses/square-sitting-talking.jpg'
+  },
+  {
+    id: 'desk-worried',
+    name: 'Desk Worried',
+    description: 'Sitting at desk with worried or concerned expression',
+    prompt: 'sitting at desk pose, worried concerned expression, thoughtful troubled look',
+    emoji: '😟',
+    image: '/poses/desk-worried.jpg'
+  },
+  {
+    id: 'empty-desk-talking',
+    name: 'Empty Desk Talking',
+    description: 'Standing at empty desk talking or presenting',
+    prompt: 'standing at empty desk pose, talking presenting gesture, professional setting',
+    emoji: '🗣️',
+    image: '/poses/empty-desk-talking.jpg'
+  },
+  {
+    id: 'desk-3',
+    name: 'Desk Pose 3',
+    description: 'Sitting at desk in professional pose',
+    prompt: 'sitting at desk pose, professional posture, office setting, business environment',
+    emoji: '💼',
+    image: '/poses/desk-3.jpg'
+  },
+  {
+    id: 'desk-4',
+    name: 'Desk Pose 4',
+    description: 'Sitting at desk in another professional pose',
+    prompt: 'sitting at desk pose, professional posture, office setting, business environment',
+    emoji: '💼',
+    image: '/poses/desk-4.jpg'
   }
 ];
 

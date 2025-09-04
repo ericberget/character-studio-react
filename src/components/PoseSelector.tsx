@@ -24,9 +24,9 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
-  // Show first 6 poses by default, or all if expanded
-  const posesToShow = isExpanded ? poses : poses.slice(0, 6);
-  const hasMorePoses = poses.length > 6;
+  // Show first 12 poses (2 rows) by default, or all if expanded
+  const posesToShow = isExpanded ? poses : poses.slice(0, 12);
+  const hasMorePoses = poses.length > 12;
   return (
     <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">
@@ -155,7 +155,7 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
             ) : (
               <>
                 <ChevronDown className="w-4 h-4" />
-                View More Poses ({poses.length - 6} more)
+                View More Poses ({poses.length - 12} more)
               </>
             )}
           </button>
