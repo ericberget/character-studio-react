@@ -76,6 +76,9 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
           result.imageUrl,
           `character-${character.pose.name.toLowerCase().replace(/\s+/g, '-')}-no-bg.png`
         );
+        
+        // Show success message
+        alert('Background removed successfully! The PNG file has transparent background. When opened in image editors, the checkerboard pattern indicates transparency.');
       } else {
         alert(`Background removal failed: ${result.error || 'Unknown error'}`);
       }
@@ -190,7 +193,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                   onClick={() => handleRemoveBackground(character)}
                   disabled={removingBackground === `${character.pose.id}-${character.timestamp}`}
                   className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 text-sm hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  title="Remove background to create transparent PNG"
+                  title="Remove background to create transparent PNG (checkerboard = transparency)"
                 >
                   {removingBackground === `${character.pose.id}-${character.timestamp}` ? (
                     <>
@@ -264,7 +267,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                       onClick={() => handleRemoveBackground(selectedImage)}
                       disabled={removingBackground === `${selectedImage.pose.id}-${selectedImage.timestamp}`}
                       className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                      title="Remove background to create transparent PNG"
+                      title="Remove background to create transparent PNG (checkerboard = transparency)"
                     >
                       {removingBackground === `${selectedImage.pose.id}-${selectedImage.timestamp}` ? (
                         <>

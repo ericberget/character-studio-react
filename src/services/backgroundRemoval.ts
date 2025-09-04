@@ -80,7 +80,7 @@ export const removeBackgroundWithGemini = async (imageUrl: string): Promise<ApiR
     const base64Image = await imageUrlToBase64(imageUrl);
     
     // Use Gemini to remove background by asking it to isolate the character
-    const prompt = "Remove the background completely, keeping only the character. Create a PNG image with alpha channel transparency where the background is transparent. Focus only on the person/subject in the image. Ensure the character is clearly visible with clean edges. The background should be transparent (alpha = 0), not white or any other color.";
+    const prompt = "Remove the background completely, keeping only the character. Create a PNG image with perfect alpha channel transparency where the background is completely transparent. Focus only on the person/subject in the image. Ensure the character is clearly visible with clean edges and proper transparency. The background should be transparent (alpha = 0), not white, gray, or any other color. Make sure the edges are clean and there are no artifacts around the character.";
     
     console.log('🖼️ Starting background removal with Gemini...');
     

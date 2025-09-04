@@ -144,6 +144,8 @@ The app includes background removal functionality that works in two ways:
 4. The transparent background image will automatically download as PNG
 5. Subsequent clicks will download the cached version
 
+**Note**: When you open the downloaded PNG in image editing software like Photoshop, you'll see a gray and white checkerboard pattern. This is normal - it's how the software displays transparency. The background is truly transparent and will blend seamlessly with any background when used in other applications.
+
 ## Important Notes
 
 - **API Key Security**: Never commit your `.env` file. The API key should be kept secret.
