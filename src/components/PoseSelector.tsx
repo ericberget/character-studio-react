@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '../utils/cn';
-import { Plus } from 'lucide-react';
+import { Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import type { CharacterPose } from '../types';
 
 interface PoseSelectorProps {
@@ -22,6 +22,11 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
   maxPoses = 6,
   className
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Show first 6 poses by default, or all if expanded
+  const posesToShow = isExpanded ? poses : poses.slice(0, 6);
+  const hasMorePoses = poses.length > 6;
   return (
     <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">
@@ -34,7 +39,7 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
       </div>
       
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        {poses.map((pose) => {
+        {posesToShow.map((pose) => {
           const isSelected = selectedPoses.includes(pose.id);
           const isDisabled = !isSelected && selectedPoses.length >= maxPoses;
           
@@ -135,10 +140,32 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
         )}
       </div>
       
+      {/* View More Poses Button */}
+      {hasMorePoses && (
+        <div className="flex justify-center">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-gray-300 transition-colors duration-200 text-sm"
+          >
+            {isExpanded ? (
+              <>
+                <ChevronUp className="w-4 h-4" />
+                Show Less Poses
+              </>
+            ) : (
+              <>
+                <ChevronDown className="w-4 h-4" />
+                View More Poses ({poses.length - 6} more)
+              </>
+            )}
+          </button>
+        </div>
+      )}
+      
       <div className="flex gap-2 flex-wrap">
         <button
           onClick={() => {
-            const allPoseIds = poses.slice(0, maxPoses).map(p => p.id);
+            const allPoseIds = posesToShow.map(p => p.id);
             allPoseIds.forEach(id => {
               if (!selectedPoses.includes(id)) {
                 onPoseToggle(id);
