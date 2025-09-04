@@ -33,9 +33,36 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
         <h3 className="text-xl font-medium text-gray-300 tracking-wider">
           Select Poses to Generate
         </h3>
-        <span className="text-sm text-gray-500">
-          {selectedPoses.length}/{maxPoses} selected
-        </span>
+        <div className="flex items-center gap-3">
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                const allPoseIds = posesToShow.map(p => p.id);
+                allPoseIds.forEach(id => {
+                  if (!selectedPoses.includes(id)) {
+                    onPoseToggle(id);
+                  }
+                });
+              }}
+              className="btn-secondary text-xs"
+              disabled={selectedPoses.length >= maxPoses}
+            >
+              Select All
+            </button>
+            <button
+              onClick={() => {
+                selectedPoses.forEach(id => onPoseToggle(id));
+              }}
+              className="btn-secondary text-xs"
+              disabled={selectedPoses.length === 0}
+            >
+              Clear All
+            </button>
+          </div>
+          <span className="text-sm text-gray-500">
+            {selectedPoses.length}/{maxPoses} selected
+          </span>
+        </div>
       </div>
       
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -162,31 +189,7 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
         </div>
       )}
       
-      <div className="flex gap-2 flex-wrap">
-        <button
-          onClick={() => {
-            const allPoseIds = posesToShow.map(p => p.id);
-            allPoseIds.forEach(id => {
-              if (!selectedPoses.includes(id)) {
-                onPoseToggle(id);
-              }
-            });
-          }}
-          className="btn-secondary text-xs"
-          disabled={selectedPoses.length >= maxPoses}
-        >
-          Select All
-        </button>
-        <button
-          onClick={() => {
-            selectedPoses.forEach(id => onPoseToggle(id));
-          }}
-          className="btn-secondary text-xs"
-          disabled={selectedPoses.length === 0}
-        >
-          Clear All
-        </button>
-      </div>
+
     </div>
   );
 };
