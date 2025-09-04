@@ -66,6 +66,7 @@ export const CharacterStudio: React.FC = () => {
     });
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCustomStyleSelect = useCallback((imageUrl: string, _styleName: string) => {
     setCustomStyles(prev => [...prev, { name: 'Custom Style Reference', image: imageUrl }]);
     setArtStyle('custom'); // Set to custom style
@@ -228,14 +229,14 @@ export const CharacterStudio: React.FC = () => {
             <button
               onClick={() => {
                 setIsMenuOpen(false);
-                // Background Remove Tool (coming soon)
-                alert('Background Remove Tool - Coming Soon!');
+                // Background removal is now available in the character grid
+                alert('Background removal is now available! Click "Remove Background" on any generated character to remove the background.');
               }}
               className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
             >
-              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-              Background Remove Tool
-              <span className="text-xs text-gray-400 ml-auto">Coming Soon</span>
+              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+              Background Removal
+              <span className="text-xs text-gray-400 ml-auto">Available</span>
             </button>
             <button
               onClick={() => {
@@ -259,7 +260,7 @@ export const CharacterStudio: React.FC = () => {
           <img 
             src="/logo.png" 
             alt="Character Studio" 
-            className="mx-auto mb-6 max-w-md md:max-w-lg"
+            className="mx-auto mb-6 max-w-[493px] md:max-w-[563px]"
           />
         </div>
 

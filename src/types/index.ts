@@ -38,6 +38,7 @@ export interface ApiResponse {
   success: boolean;
   imageUrl?: string;
   error?: string;
+  message?: string;
 }
 
 export interface GenerationProgress {

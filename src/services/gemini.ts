@@ -144,6 +144,7 @@ export const validateApiKey = async (): Promise<boolean> => {
 export const analyzeAndDescribeImage = async (
   _referenceImageBase64: string,
   additionalPrompt: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _mimeType: string = 'image/jpeg'
 ): Promise<string> => {
   try {

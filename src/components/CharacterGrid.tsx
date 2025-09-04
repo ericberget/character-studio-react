@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Download, RotateCcw, ExternalLink, X, ZoomIn } from 'lucide-react';
+import { Download, RotateCcw, ExternalLink, X, ZoomIn, Loader2 } from 'lucide-react';
 import { cn } from '../utils/cn';
 import type { GeneratedCharacter } from '../types';
+import { removeBackgroundWithGemini, isBackgroundRemovalAvailable } from '../services/backgroundRemoval';
 
 interface CharacterGridProps {
   characters: GeneratedCharacter[];
@@ -17,6 +18,8 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
   className
 }) => {
   const [selectedImage, setSelectedImage] = useState<GeneratedCharacter | null>(null);
+  const [removingBackground, setRemovingBackground] = useState<string | null>(null);
+  const [backgroundRemovedImages, setBackgroundRemovedImages] = useState<Record<string, string>>({});
   
   if (characters.length === 0) return null;
 
@@ -35,6 +38,52 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Download failed:', error);
+    }
+  };
+
+  const handleRemoveBackground = async (character: GeneratedCharacter) => {
+    const imageKey = `${character.pose.id}-${character.timestamp}`;
+    
+    // Check if we already have a background-removed version
+    if (backgroundRemovedImages[imageKey]) {
+      // Download the background-removed version
+      downloadImage(
+        backgroundRemovedImages[imageKey],
+        `character-${character.pose.name.toLowerCase().replace(/\s+/g, '-')}-no-bg.png`
+      );
+      return;
+    }
+
+    // Check if background removal is available
+    if (!isBackgroundRemovalAvailable()) {
+      alert('Background removal requires API setup. Please check your environment variables.');
+      return;
+    }
+
+    setRemovingBackground(imageKey);
+    
+    try {
+      const result = await removeBackgroundWithGemini(character.imageUrl);
+      
+      if (result.success && result.imageUrl) {
+        setBackgroundRemovedImages(prev => ({
+          ...prev,
+          [imageKey]: result.imageUrl!
+        }));
+        
+        // Download the background-removed image
+        downloadImage(
+          result.imageUrl,
+          `character-${character.pose.name.toLowerCase().replace(/\s+/g, '-')}-no-bg.png`
+        );
+      } else {
+        alert(`Background removal failed: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Background removal error:', error);
+      alert('Background removal failed. Please try again.');
+    } finally {
+      setRemovingBackground(null);
     }
   };
 
@@ -138,13 +187,21 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                   Download
                 </button>
                 <button
-                  onClick={() => {
-                    // Remove Background functionality - coming soon
-                    alert('Remove Background feature coming soon!');
-                  }}
-                  className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 text-sm hover:scale-105 active:scale-95"
+                  onClick={() => handleRemoveBackground(character)}
+                  disabled={removingBackground === `${character.pose.id}-${character.timestamp}`}
+                  className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 text-sm hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  title="Remove background to create transparent PNG"
                 >
-                  Remove Background
+                  {removingBackground === `${character.pose.id}-${character.timestamp}` ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : backgroundRemovedImages[`${character.pose.id}-${character.timestamp}`] ? (
+                    'Download Transparent'
+                  ) : (
+                    'Remove Background'
+                  )}
                 </button>
               </div>
             </div>
@@ -204,13 +261,21 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                       Download
                     </button>
                     <button
-                      onClick={() => {
-                        // Remove Background functionality - coming soon
-                        alert('Remove Background feature coming soon!');
-                      }}
-                      className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 hover:scale-105 active:scale-95"
+                      onClick={() => handleRemoveBackground(selectedImage)}
+                      disabled={removingBackground === `${selectedImage.pose.id}-${selectedImage.timestamp}`}
+                      className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      title="Remove background to create transparent PNG"
                     >
-                      Remove Background
+                      {removingBackground === `${selectedImage.pose.id}-${selectedImage.timestamp}` ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Processing...
+                        </>
+                      ) : backgroundRemovedImages[`${selectedImage.pose.id}-${selectedImage.timestamp}`] ? (
+                        'Download Transparent'
+                      ) : (
+                        'Remove Background'
+                      )}
                     </button>
                   </div>
                 </div>
