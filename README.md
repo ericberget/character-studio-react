@@ -144,7 +144,7 @@ The app includes background removal functionality that works in two ways:
 4. The transparent background image will automatically download as PNG
 5. Subsequent clicks will download the cached version
 
-**Note**: When you open the downloaded PNG in image editing software like Photoshop, you'll see a gray and white checkerboard pattern. This is normal - it's how the software displays transparency. The background is truly transparent and will blend seamlessly with any background when used in other applications.
+**Note**: The background removal creates PNG files with transparent backgrounds. If you see any visible background patterns or colors in the downloaded file, that indicates the transparency isn't working correctly and needs to be improved.
 
 ## Important Notes
 
