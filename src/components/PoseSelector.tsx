@@ -8,6 +8,8 @@ interface PoseSelectorProps {
   selectedPoses: string[];
   onPoseToggle: (poseId: string) => void;
   onCustomPoseUpload?: () => void;
+  onUseReferencePose?: () => void;
+  hasReferenceImage?: boolean;
   customPoses?: Array<{name: string, image: string}>;
   maxPoses?: number;
   className?: string;
@@ -18,37 +20,25 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
   selectedPoses,
   onPoseToggle,
   onCustomPoseUpload,
+  onUseReferencePose,
+  hasReferenceImage = false,
   customPoses = [],
   maxPoses = 6,
   className
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  // const [isExpanded, setIsExpanded] = useState(false);
   
-  // Show first 12 poses (2 rows) by default, or all if expanded
-  const posesToShow = isExpanded ? poses : poses.slice(0, 12);
-  const hasMorePoses = poses.length > 12;
+  // Show all poses by default (commenting out expand functionality for now)
+  const posesToShow = poses; // isExpanded ? poses : poses.slice(0, 12);
+  // const hasMorePoses = poses.length > 12;
   return (
     <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-medium text-gray-300 tracking-wider">
-          Select Poses to Generate
+          Select Pose to Emulate
         </h3>
         <div className="flex items-center gap-3">
           <div className="flex gap-2">
-            <button
-              onClick={() => {
-                const allPoseIds = posesToShow.map(p => p.id);
-                allPoseIds.forEach(id => {
-                  if (!selectedPoses.includes(id)) {
-                    onPoseToggle(id);
-                  }
-                });
-              }}
-              className="btn-secondary text-xs"
-              disabled={selectedPoses.length >= maxPoses}
-            >
-              Select All
-            </button>
             <button
               onClick={() => {
                 selectedPoses.forEach(id => onPoseToggle(id));
@@ -58,6 +48,15 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
             >
               Clear All
             </button>
+            {onUseReferencePose && hasReferenceImage && (
+              <button
+                onClick={onUseReferencePose}
+                className="btn-secondary text-xs bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700"
+                title="Generate character in the same pose as your reference photo"
+              >
+                Use Pose from Reference
+              </button>
+            )}
           </div>
           <span className="text-sm text-gray-500">
             {selectedPoses.length}/{maxPoses} selected
@@ -167,8 +166,8 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
         )}
       </div>
       
-      {/* View More Poses Button */}
-      {hasMorePoses && (
+      {/* View More Poses Button - Commented out for now */}
+      {/* {hasMorePoses && (
         <div className="flex justify-center">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
@@ -187,7 +186,7 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
             )}
           </button>
         </div>
-      )}
+      )} */}
       
 
     </div>

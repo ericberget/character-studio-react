@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Download, RotateCcw, ExternalLink, X, ZoomIn, Loader2 } from 'lucide-react';
+import { Download, RotateCcw, ExternalLink, X, ZoomIn, Loader2, Image as ImageIcon, Palette } from 'lucide-react';
 import { cn } from '../utils/cn';
 import type { GeneratedCharacter } from '../types';
-import { removeBackgroundWithGemini, isBackgroundRemovalAvailable } from '../services/backgroundRemoval';
+import { removeBackgroundWithGemini, addBackgroundContext, isBackgroundRemovalAvailable } from '../services/backgroundRemoval';
+import { BackgroundSwapModal } from './BackgroundSwapModal';
 
 interface CharacterGridProps {
   characters: GeneratedCharacter[];
@@ -20,6 +21,8 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
   const [selectedImage, setSelectedImage] = useState<GeneratedCharacter | null>(null);
   const [removingBackground, setRemovingBackground] = useState<string | null>(null);
   const [backgroundRemovedImages, setBackgroundRemovedImages] = useState<Record<string, string>>({});
+  const [showBackgroundSwap, setShowBackgroundSwap] = useState(false);
+  const [characterForSwap, setCharacterForSwap] = useState<GeneratedCharacter | null>(null);
   
   if (characters.length === 0) return null;
 
@@ -89,6 +92,8 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
       setRemovingBackground(null);
     }
   };
+
+
 
 
 
@@ -192,19 +197,30 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                 <button
                   onClick={() => handleRemoveBackground(character)}
                   disabled={removingBackground === `${character.pose.id}-${character.timestamp}`}
-                  className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 text-sm hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-3 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                   title="Remove background to create transparent PNG"
                 >
                   {removingBackground === `${character.pose.id}-${character.timestamp}` ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-3 h-3 animate-spin" />
                       Processing...
                     </>
                   ) : backgroundRemovedImages[`${character.pose.id}-${character.timestamp}`] ? (
                     'Download Transparent'
                   ) : (
-                    'Remove Background'
+                    'Remove BG'
                   )}
+                </button>
+                <button
+                  onClick={() => {
+                    setCharacterForSwap(character);
+                    setShowBackgroundSwap(true);
+                  }}
+                  className="px-3 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 text-xs hover:scale-105 active:scale-95 flex items-center gap-1"
+                  title="Swap background with custom or suggested backgrounds"
+                >
+                  <Palette className="w-3 h-3" />
+                  Swap BG
                 </button>
               </div>
             </div>
@@ -266,19 +282,30 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
                     <button
                       onClick={() => handleRemoveBackground(selectedImage)}
                       disabled={removingBackground === `${selectedImage.pose.id}-${selectedImage.timestamp}`}
-                      className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="px-3 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 text-xs hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                       title="Remove background to create transparent PNG"
                     >
                       {removingBackground === `${selectedImage.pose.id}-${selectedImage.timestamp}` ? (
                         <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <Loader2 className="w-3 h-3 animate-spin" />
                           Processing...
                         </>
                       ) : backgroundRemovedImages[`${selectedImage.pose.id}-${selectedImage.timestamp}`] ? (
                         'Download Transparent'
                       ) : (
-                        'Remove Background'
+                        'Remove BG'
                       )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setCharacterForSwap(selectedImage);
+                        setShowBackgroundSwap(true);
+                      }}
+                      className="px-3 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 text-xs hover:scale-105 active:scale-95 flex items-center gap-1"
+                      title="Swap background with custom or suggested backgrounds"
+                    >
+                      <Palette className="w-3 h-3" />
+                      Swap BG
                     </button>
                   </div>
                 </div>
@@ -287,6 +314,28 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Background Swap Modal */}
+      {characterForSwap && (
+        <BackgroundSwapModal
+          character={characterForSwap}
+          isOpen={showBackgroundSwap}
+          onClose={() => {
+            setShowBackgroundSwap(false);
+            setCharacterForSwap(null);
+          }}
+          onBackgroundSwapped={(newImageUrl) => {
+            // Update the character with the new background
+            const updatedCharacters = characters.map(char => 
+              char === characterForSwap 
+                ? { ...char, imageUrl: newImageUrl }
+                : char
+            );
+            // You might want to update the parent component's state here
+            console.log('Background swapped successfully!', newImageUrl);
+          }}
+        />
       )}
     </div>
   );

@@ -10,20 +10,20 @@ export const defaultPoses: CharacterPose[] = [
     image: '/poses/square-standing-looking-right-talking.jpg'
   },
   {
-    id: 'holding-clipboard',
-    name: 'Holding Clipboard',
-    description: 'Standing close-up holding clipboard professionally',
-    prompt: 'holding clipboard pose, professional stance, close-up view, business attire',
-    emoji: '📋',
-    image: '/poses/square-standing-close-up-holding-clipboard.jpg'
-  },
-  {
     id: 'arms-crossed',
     name: 'Arms Crossed',
     description: 'Standing with arms crossed, confident pose',
     prompt: 'arms crossed pose, confident stance, looking at camera',
     emoji: '🤗',
     image: '/poses/square-standing-arms-crossed.jpg'
+  },
+  {
+    id: 'holding-clipboard',
+    name: 'Holding Clipboard',
+    description: 'Standing close-up holding clipboard professionally',
+    prompt: 'holding clipboard pose, professional stance, close-up view, business attire',
+    emoji: '📋',
+    image: '/poses/square-standing-close-up-holding-clipboard.jpg'
   },
   {
     id: 'sitting-desk',
@@ -40,14 +40,6 @@ export const defaultPoses: CharacterPose[] = [
     prompt: 'hands together presenting pose, professional presentation stance, engaging gesture',
     emoji: '🙏',
     image: '/poses/square-hands-together-presenting.jpg'
-  },
-  {
-    id: 'downcast',
-    name: 'Downcast Look',
-    description: 'Looking down with thoughtful or contemplative expression',
-    prompt: 'downcast pose, looking down, thoughtful contemplative expression, introspective',
-    emoji: '😔',
-    image: '/poses/square-downcast.jpg'
   },
   {
     id: 'coffee-standing',
@@ -150,7 +142,7 @@ export const artStyles = [
     value: 'realistic-painting-3', 
     label: 'Realistic Painting 3', 
     image: '/artstyles/realistic-painting-3.jpg',
-    stylePrompt: 'realistic painting style, oil painting technique, artistic brushwork, traditional art medium'
+    stylePrompt: 'realistic painting style, oil painting technique, artistic brushwork, traditional art medium, no signatures or watermarks'
   },
   { 
     value: 'sketch', 
@@ -168,13 +160,13 @@ export const artStyles = [
     value: 'claymation', 
     label: 'Claymation Style', 
     image: '/artstyles/claymation-style.jpg',
-    stylePrompt: 'claymation style, 3D clay animation look, stop-motion character design'
+    stylePrompt: 'claymation style, 3D clay animation look, stop-motion character design. Keep the character the same, make claymation, minimal detail'
   },
   { 
     value: 'realistic-painting', 
     label: 'Realistic Painting', 
     image: '/artstyles/realistic-painting-2.jpg',
-    stylePrompt: 'realistic painting style, oil painting technique, artistic brushwork, traditional art medium'
+    stylePrompt: 'realistic painting style, oil painting technique, artistic brushwork, traditional art medium, no signatures or watermarks'
   },
   { 
     value: 'pixel-art', 

@@ -6,17 +6,19 @@ interface CustomReferenceUploadProps {
   onCustomPoseSelect: (imageUrl: string, poseName: string) => void;
   isOpen?: boolean;
   onClose?: () => void;
+  uploadType?: 'style' | 'pose';
 }
 
 export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
   onCustomStyleSelect,
   onCustomPoseSelect,
   isOpen: externalIsOpen,
-  onClose
+  onClose,
+  uploadType: propUploadType
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
-  const [uploadType, setUploadType] = useState<'style' | 'pose' | null>(null);
+  const [uploadType, setUploadType] = useState<'style' | 'pose' | null>(propUploadType || null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
 
   const handleFileSelect = useCallback((file: File) => {
@@ -87,7 +89,7 @@ export const CustomReferenceUpload: React.FC<CustomReferenceUploadProps> = ({
             </div>
 
             {!uploadType ? (
-              // Step 1: Choose type
+              // Step 1: Choose type (only show if no uploadType prop provided)
               <div className="space-y-4">
                 <p className="text-gray-300 text-sm mb-4">
                   Choose what type of reference you want to upload:

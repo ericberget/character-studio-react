@@ -1,35 +1,114 @@
-// Daily usage tracker using localStorage
-const DAILY_LIMIT = 25;
+interface UserUsage {
+  userId: string;
+  freeGenerationsUsed: number;
+  freeGenerationsLimit: number;
+  subscriptionTier: 'free' | 'starter' | 'pro' | null;
+  subscriptionExpiry: string | null;
+  totalGenerations: number;
+  lastGenerationDate: string;
+}
 
-export const getTodayUsage = (): number => {
-  const today = new Date().toDateString();
-  const stored = localStorage.getItem(`usage_${today}`);
-  return stored ? parseInt(stored) : 0;
-};
+const FREE_GENERATIONS_LIMIT = 10;
 
-export const incrementUsage = (): number => {
-  const today = new Date().toDateString();
-  const current = getTodayUsage();
-  const newUsage = current + 1;
-  localStorage.setItem(`usage_${today}`, newUsage.toString());
-  return newUsage;
-};
+export class UsageTracker {
+  private static instance: UsageTracker;
+  private storageKey = 'character-studio-usage';
 
-export const canGenerateImage = (): boolean => {
-  return getTodayUsage() < DAILY_LIMIT;
-};
+  private constructor() {}
 
-export const getRemainingImages = (): number => {
-  return Math.max(0, DAILY_LIMIT - getTodayUsage());
-};
+  static getInstance(): UsageTracker {
+    if (!UsageTracker.instance) {
+      UsageTracker.instance = new UsageTracker();
+    }
+    return UsageTracker.instance;
+  }
 
-export const getUsagePercentage = (): number => {
-  return (getTodayUsage() / DAILY_LIMIT) * 100;
-};
+  private getUserId(): string {
+    let userId = localStorage.getItem('character-studio-user-id');
+    if (!userId) {
+      userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('character-studio-user-id', userId);
+    }
+    return userId;
+  }
 
-export const getNextResetTime = (): string => {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-  return tomorrow.toLocaleString();
-};
+  private getUserUsage(): UserUsage {
+    const userId = this.getUserId();
+    const stored = localStorage.getItem(this.storageKey);
+    
+    if (stored) {
+      return JSON.parse(stored);
+    }
+
+    // Initialize new user
+    const newUsage: UserUsage = {
+      userId,
+      freeGenerationsUsed: 0,
+      freeGenerationsLimit: FREE_GENERATIONS_LIMIT,
+      subscriptionTier: null,
+      subscriptionExpiry: null,
+      totalGenerations: 0,
+      lastGenerationDate: new Date().toISOString()
+    };
+
+    localStorage.setItem(this.storageKey, JSON.stringify(newUsage));
+    return newUsage;
+  }
+
+  private saveUserUsage(usage: UserUsage): void {
+    localStorage.setItem(this.storageKey, JSON.stringify(usage));
+  }
+
+  canGenerate(): boolean {
+    const usage = this.getUserUsage();
+    
+    if (usage.subscriptionTier && usage.subscriptionTier !== 'free') {
+      return true; // Paid subscription
+    }
+    
+    return usage.freeGenerationsUsed < usage.freeGenerationsLimit;
+  }
+
+  recordGeneration(): void {
+    const usage = this.getUserUsage();
+    usage.freeGenerationsUsed += 1;
+    usage.totalGenerations += 1;
+    usage.lastGenerationDate = new Date().toISOString();
+    this.saveUserUsage(usage);
+  }
+
+  getRemainingFreeGenerations(): number {
+    const usage = this.getUserUsage();
+    return Math.max(0, usage.freeGenerationsLimit - usage.freeGenerationsUsed);
+  }
+
+  getUsageStats(): UserUsage {
+    return this.getUserUsage();
+  }
+
+  upgradeSubscription(tier: 'starter' | 'pro'): void {
+    const usage = this.getUserUsage();
+    usage.subscriptionTier = tier;
+    usage.subscriptionExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days
+    this.saveUserUsage(usage);
+  }
+
+  resetUsage(): void {
+    localStorage.removeItem(this.storageKey);
+  }
+
+  isSubscriptionActive(): boolean {
+    const usage = this.getUserUsage();
+    if (!usage.subscriptionTier || usage.subscriptionTier === 'free') {
+      return false;
+    }
+    
+    if (usage.subscriptionExpiry) {
+      return new Date(usage.subscriptionExpiry) > new Date();
+    }
+    
+    return false;
+  }
+}
+
+export const usageTracker = UsageTracker.getInstance();

@@ -3,16 +3,23 @@ import { AlertCircle, CheckCircle, Sparkles, X, Info } from 'lucide-react';
 import { ImageUpload } from './ImageUpload';
 import { PoseSelector } from './PoseSelector';
 import { StyleSelector } from './StyleSelector';
+import { BackgroundSelector } from './BackgroundSelector';
 import { GenerationProgress } from './GenerationProgress';
 import { CharacterGrid } from './CharacterGrid';
 import { CustomReferenceUpload } from './CustomReferenceUpload';
+import { UsageDisplay } from './UsageDisplay';
 import { generateCharacterImage, fileToBase64 } from '../services/gemini';
 import { defaultPoses, artStyles } from '../data/poses';
 import type { GeneratedCharacter, GenerationProgress as ProgressType, ArtStyle } from '../types';
 import { cn } from '../utils/cn';
+import { usageTracker } from '../utils/usageTracker';
 
 
-export const CharacterStudio: React.FC = () => {
+interface CharacterStudioProps {
+  onUpgradeClick: () => void;
+}
+
+export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick }) => {
   const resultsRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
@@ -25,6 +32,7 @@ export const CharacterStudio: React.FC = () => {
   const [customStyles, setCustomStyles] = useState<Array<{name: string, image: string}>>([]);
   const [customPoses, setCustomPoses] = useState<Array<{name: string, image: string}>>([]);
   const [showCustomUpload, setShowCustomUpload] = useState(false);
+  const [customUploadType, setCustomUploadType] = useState<'style' | 'pose' | null>(null);
   const [showArtDirectionTips, setShowArtDirectionTips] = useState(false);
   const [progress, setProgress] = useState<ProgressType>({
     current: 0,
@@ -78,6 +86,22 @@ export const CharacterStudio: React.FC = () => {
     setSelectedPoses(prev => [...prev, `custom-${poseName}`]);
   }, []);
 
+  const handleCustomStyleUpload = useCallback(() => {
+    setCustomUploadType('style');
+    setShowCustomUpload(true);
+  }, []);
+
+  const handleCustomPoseUpload = useCallback(() => {
+    setCustomUploadType('pose');
+    setShowCustomUpload(true);
+  }, []);
+
+  const handleUseReferencePose = useCallback(() => {
+    // Clear all selected poses and add a special "reference" pose
+    setSelectedPoses(['reference']);
+    showMessage('Reference pose selected - character will be generated in the same pose as your photo', 'success');
+  }, [showMessage]);
+
   const generateCharacterSet = async () => {
     if (!referenceImage) {
       showMessage('Please upload a reference image of your character', 'error');
@@ -89,6 +113,13 @@ export const CharacterStudio: React.FC = () => {
       return;
     }
 
+    // Check if user can generate
+    if (!usageTracker.canGenerate()) {
+      showMessage('Free trial limit reached! Please upgrade to continue generating.', 'error');
+      onUpgradeClick();
+      return;
+    }
+
     // Daily limit disabled for admin
     // if (!canGenerateImage()) {
     //   showMessage('Daily limit reached! Come back tomorrow for more generations.', 'error');
@@ -97,10 +128,13 @@ export const CharacterStudio: React.FC = () => {
 
     const posesToGenerate = defaultPoses.filter(pose => selectedPoses.includes(pose.id));
     const customPosesToGenerate = customPoses.filter(pose => selectedPoses.includes(`custom-${pose.name}`));
+    const useReferencePose = selectedPoses.includes('reference');
+    
+    const totalPoses = useReferencePose ? 1 : posesToGenerate.length + customPosesToGenerate.length;
     
     setProgress({
       current: 0,
-      total: posesToGenerate.length,
+      total: totalPoses,
       status: 'Preparing...',
       isLoading: true
     });
@@ -112,7 +146,19 @@ export const CharacterStudio: React.FC = () => {
       const referenceBase64 = await fileToBase64(referenceImage);
       const newCharacters: GeneratedCharacter[] = [];
 
-      const allPoses = [...posesToGenerate, ...customPosesToGenerate.map(cp => ({ id: `custom-${cp.name}`, name: cp.name, description: `Custom pose: ${cp.name}`, prompt: `custom pose: ${cp.name}`, emoji: '🎨' }))];
+      let allPoses;
+      if (useReferencePose) {
+        // For reference pose, create a single pose object
+        allPoses = [{
+          id: 'reference',
+          name: 'Reference Pose',
+          description: 'Same pose as reference photo',
+          prompt: 'same pose as reference image',
+          emoji: '📸'
+        }];
+      } else {
+        allPoses = [...posesToGenerate, ...customPosesToGenerate.map(cp => ({ id: `custom-${cp.name}`, name: cp.name, description: `Custom pose: ${cp.name}`, prompt: `custom pose: ${cp.name}`, emoji: '🎨' }))];
+      }
       
       for (let i = 0; i < allPoses.length; i++) {
         const pose = allPoses[i];
@@ -120,24 +166,26 @@ export const CharacterStudio: React.FC = () => {
         setProgress(prev => ({
           ...prev,
           current: i,
-          status: `Generating ${pose.name.toLowerCase()}...`
+          status: useReferencePose ? 'Stylizing reference pose...' : `Generating ${pose.name.toLowerCase()}...`
         }));
 
         // Create detailed prompt for character generation
         const selectedStyle = artStyles.find(s => s.value === artStyle);
         const customStyle = customStyles.find(s => s.name === artStyle);
         const stylePrompt = customStyle ? `custom style based on reference image` : (selectedStyle?.stylePrompt || `${artStyle} style`);
-        const posePrompt = pose.prompt;
+        const posePrompt = useReferencePose ? 'maintain exact same pose as reference image' : pose.prompt;
         const additionalPrompt = additionalDescription ? `, ${additionalDescription}` : '';
         
-        const fullPrompt = `${stylePrompt}, ${posePrompt}${additionalPrompt}. Maintain exact same character appearance, clothing, and facial features as reference image. Focus on artistic style and rendering technique only, not pose or character identity. High quality, detailed.`;
+        const fullPrompt = useReferencePose 
+          ? `${stylePrompt}${additionalPrompt}. Maintain exact same pose, character appearance, clothing, and facial features as reference image. Keep the character identical, only change the artistic style and rendering technique. Preserve all body positioning, hand gestures, facial expressions, and clothing details exactly as shown in the reference. Focus purely on style transformation while maintaining perfect pose fidelity. High quality, detailed.`
+          : `${stylePrompt}, ${posePrompt}${additionalPrompt}. Maintain exact same character appearance, clothing, and facial features as reference image. Focus on artistic style and rendering technique only, not pose or character identity. High quality, detailed.`;
 
         try {
           const result = await generateCharacterImage(fullPrompt, referenceBase64, referenceImage.type);
 
           if (result.success && result.imageUrl) {
-            // Usage tracking disabled for admin
-            // incrementUsage();
+            // Record usage for each successful generation
+            usageTracker.recordGeneration();
             newCharacters.push({
               pose,
               imageUrl: result.imageUrl,
@@ -249,6 +297,16 @@ export const CharacterStudio: React.FC = () => {
               <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
               Tips and Tricks
             </button>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                onUpgradeClick();
+              }}
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+            >
+              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+              Pricing & Plans
+            </button>
 
           </div>
         </div>
@@ -296,7 +354,7 @@ export const CharacterStudio: React.FC = () => {
                 />
               </div>
 
-              {/* Additional Description and Art Style */}
+              {/* Additional Description, Art Style, and Background */}
               <div className="space-y-6">
                 {/* Art Direction */}
                 <div>
@@ -327,12 +385,12 @@ export const CharacterStudio: React.FC = () => {
                     styles={artStyles}
                     selectedStyle={artStyle}
                     onStyleSelect={(styleValue) => setArtStyle(styleValue as ArtStyle)}
-                    onCustomStyleUpload={() => {
-                      setShowCustomUpload(true);
-                    }}
+                    onCustomStyleUpload={handleCustomStyleUpload}
                     customStyles={customStyles}
                   />
                 </div>
+
+
               </div>
             </div>
 
@@ -341,9 +399,9 @@ export const CharacterStudio: React.FC = () => {
               poses={defaultPoses}
               selectedPoses={selectedPoses}
               onPoseToggle={handlePoseToggle}
-              onCustomPoseUpload={() => {
-                setShowCustomUpload(true);
-              }}
+              onCustomPoseUpload={handleCustomPoseUpload}
+              onUseReferencePose={handleUseReferencePose}
+              hasReferenceImage={!!referenceImage}
               customPoses={customPoses}
               maxPoses={6}
               className="mt-8"
@@ -392,6 +450,9 @@ export const CharacterStudio: React.FC = () => {
                 <span>{message.text}</span>
               </div>
             )}
+
+            {/* Usage Display */}
+            <UsageDisplay onUpgradeClick={onUpgradeClick} className="mt-4" />
           </div>
         </div>
 
@@ -417,15 +478,21 @@ export const CharacterStudio: React.FC = () => {
       {showCustomUpload && (
         <CustomReferenceUpload
           isOpen={showCustomUpload}
-          onClose={() => setShowCustomUpload(false)}
+          onClose={() => {
+            setShowCustomUpload(false);
+            setCustomUploadType(null);
+          }}
           onCustomStyleSelect={(imageUrl, styleName) => {
             handleCustomStyleSelect(imageUrl, styleName);
             setShowCustomUpload(false);
+            setCustomUploadType(null);
           }}
           onCustomPoseSelect={(imageUrl, poseName) => {
             handleCustomPoseSelect(imageUrl, poseName);
             setShowCustomUpload(false);
+            setCustomUploadType(null);
           }}
+          uploadType={customUploadType}
         />
       )}
 

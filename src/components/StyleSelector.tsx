@@ -35,7 +35,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
         </h3>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {styles.map((style) => {
           const isSelected = selectedStyle === style.value;
           
@@ -46,7 +46,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
               className={cn(
                 "group relative rounded-lg border-2 transition-all duration-200 overflow-hidden",
                 "hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
-                style.image ? "aspect-square" : "aspect-square p-2",
+                style.image ? "aspect-[4/3]" : "aspect-[4/3] p-2",
                 isSelected && "border-yellow-400 shadow-lg shadow-yellow-500/25",
                 !isSelected && "border-gray-700 hover:border-gray-500"
               )}
@@ -103,7 +103,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
               className={cn(
                 "group relative rounded-lg border-2 transition-all duration-200 overflow-hidden",
                 "hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
-                "aspect-square",
+                "aspect-[4/3]",
                 isSelected && "border-yellow-400 shadow-lg shadow-yellow-500/25",
                 !isSelected && "border-gray-700 hover:border-gray-500"
               )}
@@ -131,7 +131,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
         {onCustomStyleUpload && (
           <button
             onClick={onCustomStyleUpload}
-            className="aspect-square rounded-lg border-2 border-dashed border-yellow-400 hover:border-yellow-300 transition-colors duration-200 flex flex-col items-center justify-center group"
+            className="aspect-[4/3] rounded-lg border-2 border-dashed border-yellow-400 hover:border-yellow-300 transition-colors duration-200 flex flex-col items-center justify-center group"
           >
             <Plus className="w-8 h-8 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-200" />
             <span className="text-xs text-gray-400 mt-2">Custom Style Reference</span>
