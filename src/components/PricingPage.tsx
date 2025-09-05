@@ -89,11 +89,8 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onBackToStudio, onSubs
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 py-12 px-4 sm:px-6 lg:px-8">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-black" />
-      
-      <div className="relative max-w-7xl mx-auto">
+    <div className="py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* Back Button */}
         <button
           onClick={onBackToStudio}

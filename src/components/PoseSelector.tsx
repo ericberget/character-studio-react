@@ -6,24 +6,22 @@ import type { CharacterPose } from '../types';
 interface PoseSelectorProps {
   poses: CharacterPose[];
   selectedPoses: string[];
-  onPoseToggle: (poseId: string) => void;
+  onPoseSelect: (poseId: string) => void;
   onCustomPoseUpload?: () => void;
   onUseReferencePose?: () => void;
   hasReferenceImage?: boolean;
   customPoses?: Array<{name: string, image: string}>;
-  maxPoses?: number;
   className?: string;
 }
 
 export const PoseSelector: React.FC<PoseSelectorProps> = ({
   poses,
   selectedPoses,
-  onPoseToggle,
+  onPoseSelect,
   onCustomPoseUpload,
   onUseReferencePose,
   hasReferenceImage = false,
   customPoses = [],
-  maxPoses = 6,
   className
 }) => {
   // const [isExpanded, setIsExpanded] = useState(false);
@@ -34,53 +32,36 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
   return (
     <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-medium text-gray-300 tracking-wider">
+        <h3 className="text-lg font-medium text-yellow-400 tracking-wider">
           Select Pose to Emulate
         </h3>
         <div className="flex items-center gap-3">
-          <div className="flex gap-2">
+          {onUseReferencePose && hasReferenceImage && (
             <button
-              onClick={() => {
-                selectedPoses.forEach(id => onPoseToggle(id));
-              }}
-              className="btn-secondary text-xs"
-              disabled={selectedPoses.length === 0}
+              onClick={onUseReferencePose}
+              className="btn-secondary text-xs bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700"
+              title="Generate character in the same pose as your reference photo"
             >
-              Clear All
+              Use Pose from Reference
             </button>
-            {onUseReferencePose && hasReferenceImage && (
-              <button
-                onClick={onUseReferencePose}
-                className="btn-secondary text-xs bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700"
-                title="Generate character in the same pose as your reference photo"
-              >
-                Use Pose from Reference
-              </button>
-            )}
-          </div>
-          <span className="text-sm text-gray-500">
-            {selectedPoses.length}/{maxPoses} selected
-          </span>
+          )}
         </div>
       </div>
       
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {posesToShow.map((pose) => {
           const isSelected = selectedPoses.includes(pose.id);
-          const isDisabled = !isSelected && selectedPoses.length >= maxPoses;
           
           return (
             <button
               key={pose.id}
-              onClick={() => onPoseToggle(pose.id)}
-              disabled={isDisabled}
+              onClick={() => onPoseSelect(pose.id)}
               className={cn(
                 "group relative rounded-lg border-2 transition-all duration-200 overflow-hidden",
                 "hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
                 pose.image ? "aspect-square" : "aspect-square p-2",
                 isSelected && "border-yellow-400 shadow-lg shadow-yellow-500/25",
-                !isSelected && !isDisabled && "border-gray-700 hover:border-gray-500",
-                isDisabled && "border-gray-800 opacity-50 cursor-not-allowed"
+                !isSelected && "border-gray-700 hover:border-gray-500"
               )}
             >
               {pose.image ? (
@@ -119,20 +100,17 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
         {customPoses.map((customPose, index) => {
           const poseId = `custom-${customPose.name}`;
           const isSelected = selectedPoses.includes(poseId);
-          const isDisabled = !isSelected && selectedPoses.length >= maxPoses;
           
           return (
             <button
               key={`custom-${index}`}
-              onClick={() => onPoseToggle(poseId)}
-              disabled={isDisabled}
+              onClick={() => onPoseSelect(poseId)}
               className={cn(
                 "group relative rounded-lg border-2 transition-all duration-200 overflow-hidden",
                 "hover:scale-[1.02] active:scale-[0.98] animate-fade-in",
                 "aspect-square",
                 isSelected && "border-yellow-400 shadow-lg shadow-yellow-500/25",
-                !isSelected && !isDisabled && "border-gray-700 hover:border-gray-500",
-                isDisabled && "border-gray-800 opacity-50 cursor-not-allowed"
+                !isSelected && "border-gray-700 hover:border-gray-500"
               )}
             >
               <img 
@@ -155,7 +133,7 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
         })}
         
         {/* Custom Pose Upload Slot */}
-        {onCustomPoseUpload && selectedPoses.length < maxPoses && (
+        {onCustomPoseUpload && (
           <button
             onClick={onCustomPoseUpload}
             className="aspect-square rounded-lg border-2 border-dashed border-yellow-400 hover:border-yellow-300 transition-colors duration-200 flex flex-col items-center justify-center group"

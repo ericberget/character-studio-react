@@ -17,14 +17,15 @@ import { usageTracker } from '../utils/usageTracker';
 
 interface CharacterStudioProps {
   onUpgradeClick: () => void;
+  onAboutClick: () => void;
 }
 
-export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick }) => {
+export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick, onAboutClick }) => {
   const resultsRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
-  const [selectedPoses, setSelectedPoses] = useState<string[]>(['neutral', 'arms-crossed', 'friendly-wave']);
+  const [selectedPoses, setSelectedPoses] = useState<string[]>(['neutral']);
   const [artStyle, setArtStyle] = useState<ArtStyle>('realistic');
   const [additionalDescription, setAdditionalDescription] = useState('');
 
@@ -64,14 +65,8 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
     }
   }, [imagePreview]);
 
-  const handlePoseToggle = useCallback((poseId: string) => {
-    setSelectedPoses(prev => {
-      if (prev.includes(poseId)) {
-        return prev.filter(id => id !== poseId);
-      } else {
-        return [...prev, poseId];
-      }
-    });
+  const handlePoseSelect = useCallback((poseId: string) => {
+    setSelectedPoses([poseId]);
   }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -82,8 +77,8 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
 
   const handleCustomPoseSelect = useCallback((imageUrl: string, poseName: string) => {
     setCustomPoses(prev => [...prev, { name: poseName, image: imageUrl }]);
-    // Add custom pose to selected poses
-    setSelectedPoses(prev => [...prev, `custom-${poseName}`]);
+    // Select the custom pose
+    setSelectedPoses([`custom-${poseName}`]);
   }, []);
 
   const handleCustomStyleUpload = useCallback(() => {
@@ -97,7 +92,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
   }, []);
 
   const handleUseReferencePose = useCallback(() => {
-    // Clear all selected poses and add a special "reference" pose
+    // Select the reference pose
     setSelectedPoses(['reference']);
     showMessage('Reference pose selected - character will be generated in the same pose as your photo', 'success');
   }, [showMessage]);
@@ -245,13 +240,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
   };
 
   return (
-    <div className="min-h-screen bg-gray-950" style={{
-      backgroundImage: 'url(/bg.jpg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      backgroundAttachment: 'fixed'
-    }}>
+    <div>
       {/* Hamburger Menu */}
       <div className="fixed top-4 right-4 z-50">
         <button
@@ -300,6 +289,16 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
             <button
               onClick={() => {
                 setIsMenuOpen(false);
+                onAboutClick();
+              }}
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+            >
+              <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+              About
+            </button>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
                 onUpgradeClick();
               }}
               className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
@@ -312,7 +311,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
         </div>
       )}
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="mx-auto px-4 py-8" style={{ maxWidth: '2000px' }}>
         {/* Header */}
         <div className="text-center mb-12">
           <img 
@@ -343,9 +342,9 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Reference Image Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-3 uppercase tracking-wide">
-                  Character Reference Image
-                </label>
+                <h3 className="text-lg font-medium text-yellow-400 tracking-wider mb-3 text-left">
+                  Upload Character Reference Image
+                </h3>
                 <ImageUpload
                   onImageSelect={handleImageSelect}
                   preview={imagePreview}
@@ -360,7 +359,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label htmlFor="description" className="text-sm font-medium text-gray-300 uppercase tracking-wide">
-                      Art Direction
+                      Art Direction (Optional)
                     </label>
                     <button
                       onClick={() => setShowArtDirectionTips(true)}
@@ -398,12 +397,11 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
             <PoseSelector
               poses={defaultPoses}
               selectedPoses={selectedPoses}
-              onPoseToggle={handlePoseToggle}
+              onPoseSelect={handlePoseSelect}
               onCustomPoseUpload={handleCustomPoseUpload}
               onUseReferencePose={handleUseReferencePose}
               hasReferenceImage={!!referenceImage}
               customPoses={customPoses}
-              maxPoses={6}
               className="mt-8"
             />
 
