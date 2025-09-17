@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { cn } from '../utils/cn';
-import { Plus, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import type { CharacterPose } from '../types';
 
 interface PoseSelectorProps {

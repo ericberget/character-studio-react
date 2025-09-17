@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Download, RotateCcw, ExternalLink, X, ZoomIn, Loader2, Image as ImageIcon, Palette } from 'lucide-react';
+import { Download, RotateCcw, ExternalLink, X, ZoomIn, Loader2, Palette } from 'lucide-react';
 import { cn } from '../utils/cn';
 import type { GeneratedCharacter } from '../types';
-import { removeBackgroundWithGemini, addBackgroundContext, isBackgroundRemovalAvailable } from '../services/backgroundRemoval';
+import { removeBackgroundWithGemini, isBackgroundRemovalAvailable } from '../services/backgroundRemoval';
 import { BackgroundSwapModal } from './BackgroundSwapModal';
 
 interface CharacterGridProps {
@@ -327,11 +327,6 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
           }}
           onBackgroundSwapped={(newImageUrl) => {
             // Update the character with the new background
-            const updatedCharacters = characters.map(char => 
-              char === characterForSwap 
-                ? { ...char, imageUrl: newImageUrl }
-                : char
-            );
             // You might want to update the parent component's state here
             console.log('Background swapped successfully!', newImageUrl);
           }}

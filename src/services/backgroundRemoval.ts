@@ -130,7 +130,7 @@ export const addBackgroundContext = async (
     const characterBase64 = await imageUrlToBase64(characterImageUrl);
     
     // Convert background image to base64
-    const backgroundBase64 = await imageUrlToBase64(backgroundImageUrl);
+    await imageUrlToBase64(backgroundImageUrl);
     
     // Use Gemini to place character in the background context
     const prompt = `Place the character in this background context. Integrate the character naturally into the background scene. Maintain the character's appearance and pose while making them fit naturally into the background environment.`;

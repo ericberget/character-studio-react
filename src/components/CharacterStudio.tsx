@@ -3,7 +3,6 @@ import { AlertCircle, CheckCircle, Sparkles, X, Info, User, LogIn } from 'lucide
 import { ImageUpload } from './ImageUpload';
 import { PoseSelector } from './PoseSelector';
 import { StyleSelector } from './StyleSelector';
-import { BackgroundSelector } from './BackgroundSelector';
 import { GenerationProgress } from './GenerationProgress';
 import { CharacterGrid } from './CharacterGrid';
 import { CustomReferenceUpload } from './CustomReferenceUpload';
@@ -525,7 +524,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
             setShowCustomUpload(false);
             setCustomUploadType(null);
           }}
-          uploadType={customUploadType}
+          uploadType={customUploadType || undefined}
         />
       )}
 

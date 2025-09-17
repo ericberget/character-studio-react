@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Sparkles, Zap, Crown, Star, ArrowRight } from 'lucide-react';
+import { Check, Sparkles, Zap, Star, ArrowRight } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 interface PricingTier {
@@ -76,7 +76,6 @@ interface PricingPageProps {
 }
 
 export const PricingPage: React.FC<PricingPageProps> = ({ onBackToStudio, onSubscriptionUpgrade }) => {
-  const [selectedTier, setSelectedTier] = useState<string>('pro');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   const getDiscount = (tier: PricingTier) => {

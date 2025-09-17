@@ -1,6 +1,5 @@
 import React from 'react';
 import { ArrowLeft, Mail, Linkedin, Github } from 'lucide-react';
-import { cn } from '../utils/cn';
 
 interface AboutPageProps {
   onBackToStudio: () => void;
