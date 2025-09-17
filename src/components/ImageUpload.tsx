@@ -80,7 +80,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           alt="Character reference"
           className={cn(
             "w-full object-cover",
-            className?.includes('aspect-square') ? "h-full" : "h-64"
+            className?.includes('aspect-square') ? "h-full" : "h-48"
           )}
         />
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
@@ -124,7 +124,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     >
       <label className={cn(
         "block w-full cursor-pointer",
-        className?.includes('aspect-square') ? "h-full" : "h-64"
+        className?.includes('aspect-square') ? "h-full" : "h-48"
       )}>
         <input
           type="file"
@@ -133,19 +133,19 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           className="hidden"
           disabled={isLoading}
         />
-        <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+        <div className="flex flex-col items-center justify-center h-full p-6 text-center">
           {isLoading ? (
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
           ) : (
             <>
-              <Upload className="w-12 h-12 text-gray-500 mb-4" />
-              <h3 className="text-lg font-medium text-gray-300 mb-2 tracking-wide">
+              <Upload className="w-10 h-10 text-gray-500 mb-3" />
+              <h3 className="text-base font-medium text-gray-300 mb-2 tracking-wide">
                 Upload Reference Image
               </h3>
               <p className="text-sm text-gray-500">
                 Drop an image here or click to browse
               </p>
-              <p className="text-xs text-gray-600 mt-2">
+              <p className="text-xs text-gray-600 mt-1">
                 Supports JPG, PNG, WebP • Max 5MB
               </p>
             </>

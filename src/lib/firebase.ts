@@ -11,17 +11,30 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
-// Validate Firebase configuration
-if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
-  console.error('Firebase configuration is missing required fields:', firebaseConfig)
-  throw new Error('Firebase configuration is incomplete. Please check your .env file.')
+// Check if Firebase is configured
+const isFirebaseConfigured = firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId
+
+// Initialize Firebase only if configured
+let app: any = null
+let auth: any = null
+let db: any = null
+let googleProvider: any = null
+
+if (isFirebaseConfigured) {
+  try {
+    app = initializeApp(firebaseConfig)
+    auth = getAuth(app)
+    db = getFirestore(app)
+    googleProvider = new GoogleAuthProvider()
+    console.log('Firebase initialized successfully')
+  } catch (error) {
+    console.error('Firebase initialization failed:', error)
+  }
+} else {
+  console.warn('Firebase configuration is incomplete. Authentication features will be disabled.')
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
-export const auth = getAuth(app)
-export const db = getFirestore(app)
-export const googleProvider = new GoogleAuthProvider()
+export { auth, db, googleProvider }
 
 // Database types
 export interface UserProfile {

@@ -35,6 +35,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Check if Firebase is configured
+    if (!auth) {
+      console.warn('Firebase auth not configured, disabling authentication')
+      setLoading(false)
+      return
+    }
+
     // Listen for auth changes
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user)
@@ -51,6 +58,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [])
 
   const fetchUserProfile = async (userId: string) => {
+    if (!db) {
+      setLoading(false)
+      return
+    }
+
     try {
       const userDoc = await getDoc(doc(db, 'user_profiles', userId))
       
@@ -68,6 +80,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   const createUserProfile = async (userId: string) => {
+    if (!auth || !db) return
+
     try {
       const currentUser = auth.currentUser
       if (!currentUser) return
@@ -101,6 +115,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   const signInWithGoogle = async () => {
+    if (!auth || !googleProvider) {
+      return { error: 'Authentication not configured' }
+    }
+
     try {
       await signInWithPopup(auth, googleProvider)
       return { error: null }
@@ -111,6 +129,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   const signOut = async () => {
+    if (!auth) return
+
     try {
       await firebaseSignOut(auth)
     } catch (error) {
@@ -120,6 +140,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return { error: 'No user logged in' }
+    if (!db) return { error: 'Database not configured' }
 
     try {
       await updateDoc(doc(db, 'user_profiles', user.uid), {
@@ -141,7 +162,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   const refreshProfile = async () => {
-    if (user) {
+    if (user && db) {
       await fetchUserProfile(user.uid)
     }
   }

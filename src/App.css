@@ -90,4 +90,8 @@
 .hover\:border-yellow-300:hover { border-color: var(--custom-yellow) !important; }
 .hover\:border-yellow-400:hover { border-color: var(--custom-yellow) !important; }
 .hover\:from-yellow-400:hover { --tw-gradient-from: var(--custom-yellow) var(--tw-gradient-from-position) !important; }
+.hover\:from-yellow-500:hover { --tw-gradient-from: var(--custom-yellow) var(--tw-gradient-from-position) !important; }
+.hover\:via-yellow-300:hover { --tw-gradient-via: var(--custom-yellow) var(--tw-gradient-via-position) !important; }
+.hover\:via-yellow-400:hover { --tw-gradient-via: var(--custom-yellow) var(--tw-gradient-via-position) !important; }
+.hover\:to-yellow-400:hover { --tw-gradient-to: var(--custom-yellow) var(--tw-gradient-to-position) !important; }
 .hover\:to-yellow-500:hover { --tw-gradient-to: var(--custom-yellow) var(--tw-gradient-to-position) !important; }
