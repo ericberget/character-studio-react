@@ -47,7 +47,7 @@ export const UsageDisplay: React.FC<UsageDisplayProps> = ({ onUpgradeClick, clas
           <Crown className="w-5 h-5 text-green-400" />
           <div>
             <div className="text-green-300 font-medium">
-              {usage.subscriptionTier?.charAt(0).toUpperCase() + usage.subscriptionTier?.slice(1)} Plan Active
+              {usage.subscriptionTier ? usage.subscriptionTier.charAt(0).toUpperCase() + usage.subscriptionTier.slice(1) : 'Free'} Plan Active
             </div>
             <div className="text-green-400 text-sm">
               Unlimited generations until {usage.subscriptionExpiry ? new Date(usage.subscriptionExpiry).toLocaleDateString() : 'expiry'}

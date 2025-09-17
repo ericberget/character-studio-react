@@ -1,3 +1,5 @@
+import type { UserProfile } from '../lib/firebase'
+
 interface UserUsage {
   userId: string;
   freeGenerationsUsed: number;
@@ -13,6 +15,7 @@ const FREE_GENERATIONS_LIMIT = 10;
 export class UsageTracker {
   private static instance: UsageTracker;
   private storageKey = 'character-studio-usage';
+  private currentProfile: UserProfile | null = null;
 
   private constructor() {}
 
@@ -23,7 +26,16 @@ export class UsageTracker {
     return UsageTracker.instance;
   }
 
+  setCurrentProfile(profile: UserProfile | null): void {
+    this.currentProfile = profile;
+  }
+
   private getUserId(): string {
+    // Use Firebase user ID if available, otherwise fall back to localStorage
+    if (this.currentProfile?.id) {
+      return this.currentProfile.id;
+    }
+    
     let userId = localStorage.getItem('character-studio-user-id');
     if (!userId) {
       userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -34,13 +46,28 @@ export class UsageTracker {
 
   private getUserUsage(): UserUsage {
     const userId = this.getUserId();
+    
+    // If we have a Firebase profile, use that data
+    if (this.currentProfile) {
+      return {
+        userId: this.currentProfile.id,
+        freeGenerationsUsed: this.currentProfile.freeGenerationsUsed,
+        freeGenerationsLimit: this.currentProfile.freeGenerationsLimit,
+        subscriptionTier: this.currentProfile.subscriptionTier,
+        subscriptionExpiry: this.currentProfile.subscriptionExpiry || null,
+        totalGenerations: this.currentProfile.totalGenerations,
+        lastGenerationDate: this.currentProfile.updatedAt
+      };
+    }
+
+    // Fallback to localStorage for anonymous users
     const stored = localStorage.getItem(this.storageKey);
     
     if (stored) {
       return JSON.parse(stored);
     }
 
-    // Initialize new user
+    // Initialize new anonymous user
     const newUsage: UserUsage = {
       userId,
       freeGenerationsUsed: 0,
@@ -56,7 +83,11 @@ export class UsageTracker {
   }
 
   private saveUserUsage(usage: UserUsage): void {
-    localStorage.setItem(this.storageKey, JSON.stringify(usage));
+    // For anonymous users, save to localStorage
+    if (!this.currentProfile) {
+      localStorage.setItem(this.storageKey, JSON.stringify(usage));
+    }
+    // For authenticated users, the profile will be updated via Firebase
   }
 
   canGenerate(): boolean {

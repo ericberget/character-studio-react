@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { AlertCircle, CheckCircle, Sparkles, X, Info } from 'lucide-react';
+import { AlertCircle, CheckCircle, Sparkles, X, Info, User, LogIn } from 'lucide-react';
 import { ImageUpload } from './ImageUpload';
 import { PoseSelector } from './PoseSelector';
 import { StyleSelector } from './StyleSelector';
@@ -13,14 +13,18 @@ import { defaultPoses, artStyles } from '../data/poses';
 import type { GeneratedCharacter, GenerationProgress as ProgressType, ArtStyle } from '../types';
 import { cn } from '../utils/cn';
 import { usageTracker } from '../utils/usageTracker';
+import { useAuth } from '../contexts/AuthContext';
 
 
 interface CharacterStudioProps {
   onUpgradeClick: () => void;
   onAboutClick: () => void;
+  onLoginClick: () => void;
+  onProfileClick: () => void;
 }
 
-export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick, onAboutClick }) => {
+export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick, onAboutClick, onLoginClick, onProfileClick }) => {
+  const { user, profile } = useAuth();
   const resultsRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
@@ -273,7 +277,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
             >
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
               Background Removal
-              <span className="text-xs text-gray-400 ml-auto">Available</span>
+              <span className="text-xs text-gray-400 ml-auto">Coming Soon</span>
             </button>
             <button
               onClick={() => {
@@ -306,6 +310,37 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
               <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
               Pricing & Plans
             </button>
+
+            {/* Authentication Section */}
+            <div className="border-t border-white/10 my-2"></div>
+            
+            {user ? (
+              <button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onProfileClick();
+                }}
+                className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+              >
+                <User className="w-4 h-4 text-blue-400" />
+                Profile
+                <span className="text-xs text-gray-400 ml-auto">
+                  {profile?.displayName || user.displayName || 'User'}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onLoginClick();
+                }}
+                className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+              >
+                <LogIn className="w-4 h-4 text-green-400" />
+                Sign In
+                <span className="text-xs text-gray-400 ml-auto">Google</span>
+              </button>
+            )}
 
           </div>
         </div>

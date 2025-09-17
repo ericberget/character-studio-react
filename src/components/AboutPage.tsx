@@ -61,19 +61,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onBackToStudio }) => {
                 </div>
               </div>
 
-              <div>
-                <h3 className="text-yellow-400 text-2xl font-semibold mb-6">
-                  My Story with Articulate Storyline
-                </h3>
-                <div className="space-y-6">
-                  <p className="text-gray-300 text-lg leading-relaxed">
-                    I've created everything from simple click-and-reveal interactions to complex branching scenarios with multiple character paths. Each project taught me something new about character design, emotional connection, and learner engagement. The characters aren't just visual elements - they're the heart of the learning experience.
-                  </p>
-                  <p className="text-gray-300 text-lg leading-relaxed">
-                    From healthcare compliance training with empathetic patient characters to sales training with diverse customer personas, I've seen how the right character can transform a dry topic into an engaging story that learners actually remember.
-                  </p>
-                </div>
-              </div>
             </div>
 
             {/* Contact Section */}

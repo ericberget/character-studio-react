@@ -30,7 +30,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
   return (
     <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium text-yellow-400">
+        <h3 className="text-lg font-medium" style={{ color: '#efd841' }}>
           Select Art Style
         </h3>
       </div>

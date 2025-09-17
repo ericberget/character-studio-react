@@ -191,5 +191,11 @@ export const artStyles = [
     label: 'Crafty Textured', 
     image: '/artstyles/crafty-textured.jpg',
     stylePrompt: 'crafty textured style, handmade art aesthetic, textured surface, artistic craft design'
+  },
+  { 
+    value: 'minimal-flat', 
+    label: 'Minimal Flat', 
+    image: '/artstyles/minimal-flat.jpg',
+    stylePrompt: 'minimal flat design style, clean geometric shapes, simple color palette, modern flat illustration'
   }
 ] as const;
