@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { AlertCircle, CheckCircle, Sparkles, X, Info, User, LogIn } from 'lucide-react';
+import { AlertCircle, CheckCircle, Sparkles, X, Info, User, LogIn, Award } from 'lucide-react';
 import { ImageUpload } from './ImageUpload';
 import { PoseSelector } from './PoseSelector';
 import { StyleSelector } from './StyleSelector';
@@ -339,8 +339,11 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
               >
                 <User className="w-4 h-4 text-blue-400" />
                 Profile
-                <span className="text-xs text-gray-400 ml-auto">
+                <span className="text-xs text-gray-400 ml-auto flex items-center gap-1">
                   {profile?.displayName || user.displayName || 'User'}
+                  {(profile?.subscriptionTier === 'starter' || profile?.subscriptionTier === 'pro') && (
+                    <Award className="w-3 h-3 text-yellow-400" title="Paid Subscriber" />
+                  )}
                 </span>
               </button>
             ) : (

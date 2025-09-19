@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Check, Sparkles, Zap, Star, ArrowRight } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { createSubscription } from '../lib/stripe';
+import { useAuth } from '../contexts/AuthContext';
 
 interface PricingTier {
   id: string;
@@ -46,8 +48,8 @@ const pricingTiers: PricingTier[] = [
   },
   {
     id: 'pro',
-    name: 'Pro',
-    price: 20,
+    name: 'Premium',
+    price: 12,
     tokens: 800,
     features: [
       '800 Tokens per month',
@@ -77,6 +79,8 @@ interface PricingPageProps {
 
 export const PricingPage: React.FC<PricingPageProps> = ({ onBackToStudio, onSubscriptionUpgrade }) => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+  const { user, profile } = useAuth();
 
   const getDiscount = (tier: PricingTier) => {
     return billingCycle === 'yearly' ? Math.round(tier.price * 0.2) : 0;
@@ -85,6 +89,28 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onBackToStudio, onSubs
   const getFinalPrice = (tier: PricingTier) => {
     const discount = getDiscount(tier);
     return tier.price - discount;
+  };
+
+  const handleSubscribe = async (tier: 'starter' | 'pro') => {
+    if (!user) {
+      alert('Please sign in to subscribe');
+      return;
+    }
+
+    setIsLoading(tier);
+    try {
+      await createSubscription(tier, user.email || undefined, user.uid);
+    } catch (error) {
+      console.error('Subscription error:', error);
+      alert('Failed to start subscription. Please try again.');
+    } finally {
+      setIsLoading(null);
+    }
+  };
+
+  const isCurrentPlan = (tierId: string) => {
+    if (!profile) return false;
+    return profile.subscriptionTier === tierId;
   };
 
   return (
@@ -152,16 +178,16 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onBackToStudio, onSubs
               key={tier.id}
               className={cn(
                 "relative rounded-2xl border-2 p-8 transition-all duration-300 hover:scale-105",
-                tier.popular 
-                  ? "border-yellow-400 bg-gray-900/50 shadow-2xl shadow-yellow-500/20" 
+                isCurrentPlan(tier.id)
+                  ? "border-green-400 bg-gray-900/50 shadow-2xl shadow-green-500/20" 
                   : "border-gray-700 bg-gray-900/30 hover:border-gray-600"
               )}
             >
-              {tier.popular && (
+              {isCurrentPlan(tier.id) && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-yellow-500 text-gray-900">
+                  <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-500 text-white">
                     <Star className="w-4 h-4 mr-1" />
-                    Most Popular
+                    CURRENT PLAN
                   </span>
                 </div>
               )}
@@ -181,11 +207,18 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onBackToStudio, onSubs
                     <span className="text-4xl font-bold text-white">Free</span>
                   ) : (
                     <>
-                      <span className="text-4xl font-bold text-white">${getFinalPrice(tier)}</span>
-                      <span className="text-gray-400">/{billingCycle === 'monthly' ? 'month' : 'month'}</span>
-                      {billingCycle === 'yearly' && (
-                        <div className="text-sm text-gray-500 line-through">${tier.price}/month</div>
-                      )}
+                      <div className="flex flex-col items-center">
+                        {tier.id === 'pro' && (
+                          <div className="text-lg text-gray-500 line-through">$20</div>
+                        )}
+                        <div className="flex items-baseline">
+                          <span className="text-4xl font-bold text-white">${getFinalPrice(tier)}</span>
+                          <span className="text-gray-400">/{billingCycle === 'monthly' ? 'month' : 'month'}</span>
+                        </div>
+                        {billingCycle === 'yearly' && tier.id !== 'pro' && (
+                          <div className="text-sm text-gray-500 line-through">${tier.price}/month</div>
+                        )}
+                      </div>
                     </>
                   )}
                 </div>
@@ -212,21 +245,31 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onBackToStudio, onSubs
                     // Handle free tier - just go back to studio
                     onBackToStudio();
                   } else {
-                    // Handle paid tiers
-                    onSubscriptionUpgrade(tier.id as 'starter' | 'pro');
+                    // Handle paid tiers with Stripe
+                    handleSubscribe(tier.id as 'starter' | 'pro');
                   }
                 }}
+                disabled={isLoading === tier.id}
                 className={cn(
                   "w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2",
                   tier.price === 0
                     ? "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-400 hover:to-green-500 shadow-lg shadow-green-500/25"
-                    : tier.popular
-                    ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-gray-900 hover:from-yellow-400 hover:to-yellow-500 shadow-lg shadow-yellow-500/25"
+                    : isCurrentPlan(tier.id)
+                    ? "bg-green-500 text-white hover:bg-green-400 shadow-lg shadow-green-500/25"
                     : "bg-gray-700 text-white hover:bg-gray-600 border border-gray-600 hover:border-gray-500"
                 )}
               >
-                {tier.price === 0 ? 'Continue Free' : 'Get Started'}
-                <ArrowRight className="w-4 h-4" />
+                {isLoading === tier.id ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {tier.price === 0 ? 'Continue Free' : isCurrentPlan(tier.id) ? 'Current Plan' : 'Get Started'}
+                    {!isCurrentPlan(tier.id) && <ArrowRight className="w-4 h-4" />}
+                  </>
+                )}
               </button>
             </div>
           ))}

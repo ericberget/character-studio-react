@@ -14,6 +14,8 @@
     "@google-cloud/vertexai": "^1.10.0",
     "@google/genai": "^1.16.0",
     "@google/generative-ai": "^0.24.1",
+    "@netlify/functions": "^4.2.5",
+    "@stripe/stripe-js": "^7.9.0",
     "@tailwindcss/vite": "^4.1.12",
     "clsx": "^2.1.1",
     "firebase": "^12.2.1",
@@ -22,6 +24,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.8.2",
+    "stripe": "^18.5.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12"
   },

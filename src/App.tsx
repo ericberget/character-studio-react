@@ -7,15 +7,30 @@ import { UserProfile } from './components/UserProfile';
 import { BackgroundSwapPage } from './components/BackgroundSwapPage';
 import { TokenUsagePage } from './components/TokenUsagePage';
 import { TipsAndTricksPage } from './components/TipsAndTricksPage';
+import { PaymentSuccess } from './components/PaymentSuccess';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { usageTracker } from './utils/usageTracker';
 import './App.css';
 
-type AppView = 'studio' | 'pricing' | 'about' | 'login' | 'profile' | 'background-swap' | 'token-usage' | 'tips-tricks';
+type AppView = 'studio' | 'pricing' | 'about' | 'login' | 'profile' | 'background-swap' | 'token-usage' | 'tips-tricks' | 'payment-success';
 
 const AppContent: React.FC = () => {
   const { profile } = useAuth();
   const [currentView, setCurrentView] = useState<AppView>('studio');
+
+  // Check if we're coming from a successful payment
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    if (sessionId) {
+      setCurrentView('payment-success');
+    }
+    
+    // Also check for Stripe success parameters
+    if (window.location.href.includes('session_id=')) {
+      setCurrentView('payment-success');
+    }
+  }, []);
 
   // Update usage tracker when profile changes
   useEffect(() => {
@@ -91,6 +106,8 @@ const AppContent: React.FC = () => {
         <TokenUsagePage onBackToStudio={handleBackToStudio} />
       ) : currentView === 'tips-tricks' ? (
         <TipsAndTricksPage onBackToStudio={handleBackToStudio} />
+      ) : currentView === 'payment-success' ? (
+        <PaymentSuccess onBackToStudio={handleBackToStudio} />
       ) : null}
     </div>
   );

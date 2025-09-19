@@ -92,7 +92,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         displayName: currentUser.displayName || '',
         photoURL: currentUser.photoURL || '',
         subscriptionTier: null,
-        subscriptionExpiry: undefined,
         freeGenerationsUsed: 0,
         freeGenerationsLimit: 10,
         totalGenerations: 0,

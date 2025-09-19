@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { User, LogOut, Settings, Crown, Zap } from 'lucide-react'
+import { User, LogOut, Settings, Crown, Zap, Award, Calendar, CreditCard } from 'lucide-react'
 
 interface UserProfileProps {
   onClose: () => void
@@ -18,22 +18,32 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
   const getSubscriptionBadge = () => {
     if (!profile?.subscriptionTier || profile.subscriptionTier === 'free') {
       return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-gray-300 border border-gray-600">
           Free Plan
         </span>
       )
     }
 
     const tierColors = {
-      starter: 'bg-blue-900 text-blue-300',
-      pro: 'bg-purple-900 text-purple-300'
+      starter: 'bg-blue-900/50 text-blue-300 border-blue-700',
+      pro: 'bg-purple-900/50 text-purple-300 border-purple-700'
+    }
+
+    const tierPrices = {
+      starter: '$5/month',
+      pro: '$12/month'
     }
 
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${tierColors[profile.subscriptionTier]}`}>
-        <Crown className="w-3 h-3 mr-1" />
-        {profile.subscriptionTier.charAt(0).toUpperCase() + profile.subscriptionTier.slice(1)} Plan
-      </span>
+      <div className="flex items-center gap-2">
+        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${tierColors[profile.subscriptionTier]}`}>
+          <Award className="w-4 h-4 mr-1" />
+          {profile.subscriptionTier.charAt(0).toUpperCase() + profile.subscriptionTier.slice(1)} Plan
+        </span>
+        <span className="text-xs text-gray-400">
+          {tierPrices[profile.subscriptionTier]}
+        </span>
+      </div>
     )
   }
 
@@ -122,6 +132,43 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
               </div>
             </div>
           </div>
+
+          {/* Subscription Details */}
+          {(profile?.subscriptionTier === 'starter' || profile?.subscriptionTier === 'pro') && (
+            <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl p-4">
+              <h4 className="text-white font-medium mb-3 flex items-center">
+                <CreditCard className="w-4 h-4 mr-2 text-yellow-400" />
+                Subscription Details
+              </h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Plan</span>
+                  <span className="text-white font-medium">
+                    {profile.subscriptionTier.charAt(0).toUpperCase() + profile.subscriptionTier.slice(1)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Status</span>
+                  <span className="text-green-400 font-medium">Active</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Billing</span>
+                  <span className="text-white font-medium">
+                    {profile.subscriptionTier === 'starter' ? '$5/month' : '$12/month'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Next Billing</span>
+                  <span className="text-gray-300">
+                    {profile.subscriptionExpiry ? 
+                      new Date(profile.subscriptionExpiry).toLocaleDateString() : 
+                      'Monthly'
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Usage Stats */}
           <div className="bg-gray-800/50 rounded-xl p-4">
