@@ -9,6 +9,7 @@ interface CharacterGridProps {
   characters: GeneratedCharacter[];
   onDownloadAll?: () => void;
   onGenerateNew?: () => void;
+  onBackgroundSwapped?: (originalCharacter: GeneratedCharacter, swappedImageUrl: string) => void;
   className?: string;
 }
 
@@ -16,6 +17,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
   characters,
   onDownloadAll,
   onGenerateNew,
+  onBackgroundSwapped,
   className
 }) => {
   const [selectedImage, setSelectedImage] = useState<GeneratedCharacter | null>(null);
@@ -43,6 +45,7 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
       console.error('Download failed:', error);
     }
   };
+
 
   const handleRemoveBackground = async (character: GeneratedCharacter) => {
     const imageKey = `${character.pose.id}-${character.timestamp}`;
@@ -126,19 +129,27 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {characters.map((character, index) => (
-          <div
-            key={`${character.pose.id}-${character.timestamp}`}
-            className="glass-card overflow-hidden group hover:scale-105 transition-transform duration-200"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <div className="relative cursor-pointer" onClick={() => setSelectedImage(character)}>
-              <img
-                src={character.imageUrl}
-                alt={character.pose.name}
-                className="w-full h-auto object-contain"
-                loading="lazy"
-              />
+        {characters.map((character, index) => {
+          const imageKey = `${character.pose.id}-${character.timestamp}`;
+          
+          return (
+            <div
+              key={imageKey}
+              className="glass-card overflow-hidden group hover:scale-105 transition-transform duration-200"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className="relative cursor-pointer" onClick={() => setSelectedImage(character)}>
+                <img
+                  src={character.imageUrl}
+                  alt={character.pose.name}
+                  className="w-full h-auto object-contain"
+                  loading="lazy"
+                />
+                {character.pose.name.includes('Background Swapped') && (
+                  <div className="absolute top-2 right-2 bg-yellow-500 text-gray-900 text-xs px-2 py-1 rounded font-medium">
+                    Background Swapped
+                  </div>
+                )}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
                 <div className="flex gap-2">
                   <button
@@ -225,7 +236,8 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="text-center text-gray-500 text-sm mt-8">
@@ -326,9 +338,10 @@ export const CharacterGrid: React.FC<CharacterGridProps> = ({
             setCharacterForSwap(null);
           }}
           onBackgroundSwapped={(newImageUrl) => {
-            // Update the character with the new background
-            // You might want to update the parent component's state here
-            console.log('Background swapped successfully!', newImageUrl);
+            if (characterForSwap && onBackgroundSwapped) {
+              onBackgroundSwapped(characterForSwap, newImageUrl);
+              console.log('Background swapped successfully!', newImageUrl);
+            }
           }}
         />
       )}

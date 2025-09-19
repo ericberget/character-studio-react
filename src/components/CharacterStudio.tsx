@@ -12,6 +12,7 @@ import { defaultPoses, artStyles } from '../data/poses';
 import type { GeneratedCharacter, GenerationProgress as ProgressType, ArtStyle } from '../types';
 import { cn } from '../utils/cn';
 import { usageTracker } from '../utils/usageTracker';
+import { recentGenerationsManager } from '../utils/recentGenerations';
 import { useAuth } from '../contexts/AuthContext';
 
 
@@ -20,9 +21,12 @@ interface CharacterStudioProps {
   onAboutClick: () => void;
   onLoginClick: () => void;
   onProfileClick: () => void;
+  onBackgroundSwapClick: () => void;
+  onTokenUsageClick: () => void;
+  onTipsAndTricksClick: () => void;
 }
 
-export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick, onAboutClick, onLoginClick, onProfileClick }) => {
+export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick, onAboutClick, onLoginClick, onProfileClick, onBackgroundSwapClick, onTokenUsageClick, onTipsAndTricksClick }) => {
   const { user, profile } = useAuth();
   const resultsRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -209,6 +213,11 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
 
       setGeneratedCharacters(newCharacters);
       
+      // Track recent generations
+      if (newCharacters.length > 0) {
+        recentGenerationsManager.addRecentGenerations(newCharacters);
+      }
+      
       if (newCharacters.length > 0) {
         showMessage(`Successfully generated ${newCharacters.length} character${newCharacters.length !== 1 ? 's' : ''}!`, 'success');
         // Auto-scroll to results after a short delay
@@ -269,22 +278,29 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
             <button
               onClick={() => {
                 setIsMenuOpen(false);
-                // Background removal is now available in the character grid
-                alert('Background removal is now available! Click "Remove Background" on any generated character to remove the background.');
+                onBackgroundSwapClick();
               }}
-              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3 header-font font-bold"
             >
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              Background Removal
-              <span className="text-xs text-gray-400 ml-auto">Coming Soon</span>
+              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+              Background Swap Studio
             </button>
             <button
               onClick={() => {
                 setIsMenuOpen(false);
-                // Tips and Tricks
-                alert('Tips and Tricks:\n\n• Upload high-quality reference images for best results\n• Use the Additional Description field to specify clothing details\n• Try different art styles to match your project needs\n• Select multiple poses to create a complete character set\n• Download images individually or use "Download All"');
+                onTokenUsageClick();
               }}
-              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3 header-font font-bold"
+            >
+              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+              Token Usage & Badges
+            </button>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                onTipsAndTricksClick();
+              }}
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3 header-font font-bold"
             >
               <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
               Tips and Tricks
@@ -294,7 +310,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
                 setIsMenuOpen(false);
                 onAboutClick();
               }}
-              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3 header-font font-bold"
             >
               <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
               About
@@ -304,7 +320,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
                 setIsMenuOpen(false);
                 onUpgradeClick();
               }}
-              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3 header-font font-bold"
             >
               <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
               Pricing & Plans
@@ -319,7 +335,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
                   setIsMenuOpen(false);
                   onProfileClick();
                 }}
-                className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+                className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3 header-font font-bold"
               >
                 <User className="w-4 h-4 text-blue-400" />
                 Profile
@@ -333,7 +349,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
                   setIsMenuOpen(false);
                   onLoginClick();
                 }}
-                className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3"
+                className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3 header-font font-bold"
               >
                 <LogIn className="w-4 h-4 text-green-400" />
                 Sign In
@@ -446,20 +462,14 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
                 onClick={generateCharacterSet}
                 disabled={progress.isLoading || !referenceImage || selectedPoses.length === 0}
                 className={cn(
-                  "w-full relative overflow-hidden rounded-xl text-lg py-5 px-8 font-semibold transition-all duration-300",
-                  "bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 hover:from-yellow-400 hover:via-yellow-300 hover:to-yellow-400",
-                  "shadow-lg hover:shadow-xl hover:shadow-yellow-500/25",
-                  "transform hover:scale-[1.02] active:scale-[0.98]",
-                  "border border-yellow-400/30",
+                  "w-full rounded-xl text-lg py-5 px-8 font-semibold",
+                  "bg-yellow-400 hover:bg-yellow-300",
                   "text-gray-900",
-                  progress.isLoading && "animate-pulse",
+                  progress.isLoading && "opacity-75",
                   (!referenceImage || selectedPoses.length === 0) && "opacity-50 cursor-not-allowed"
                 )}
               >
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer" />
-                
-                <div className="relative flex items-center justify-center">
+                <div className="flex items-center justify-center">
                   <Sparkles className="w-6 h-6 mr-3" />
                   <span className="text-lg font-bold">
                     {progress.isLoading ? 'Generating...' : 'Generate Character'}
@@ -495,6 +505,21 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
               characters={generatedCharacters}
               onDownloadAll={handleDownloadAll}
               onGenerateNew={handleGenerateNew}
+              onBackgroundSwapped={(originalCharacter, swappedImageUrl) => {
+                // Create a new character entry for the swapped version
+                const swappedCharacter: GeneratedCharacter = {
+                  ...originalCharacter,
+                  imageUrl: swappedImageUrl,
+                  timestamp: Date.now(), // New timestamp to make it unique
+                  pose: {
+                    ...originalCharacter.pose,
+                    name: `${originalCharacter.pose.name} (Background Swapped)`
+                  }
+                };
+                setGeneratedCharacters(prev => [...prev, swappedCharacter]);
+                // Track the swapped character as a recent generation
+                recentGenerationsManager.addRecentGeneration(swappedCharacter);
+              }}
             />
           </div>
         )}

@@ -4,11 +4,14 @@ import { PricingPage } from './components/PricingPage';
 import { AboutPage } from './components/AboutPage';
 import { LoginPage } from './components/LoginPage';
 import { UserProfile } from './components/UserProfile';
+import { BackgroundSwapPage } from './components/BackgroundSwapPage';
+import { TokenUsagePage } from './components/TokenUsagePage';
+import { TipsAndTricksPage } from './components/TipsAndTricksPage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { usageTracker } from './utils/usageTracker';
 import './App.css';
 
-type AppView = 'studio' | 'pricing' | 'about' | 'login' | 'profile';
+type AppView = 'studio' | 'pricing' | 'about' | 'login' | 'profile' | 'background-swap' | 'token-usage' | 'tips-tricks';
 
 const AppContent: React.FC = () => {
   const { profile } = useAuth();
@@ -39,6 +42,18 @@ const AppContent: React.FC = () => {
     setCurrentView('profile');
   };
 
+  const handleBackgroundSwapClick = () => {
+    setCurrentView('background-swap');
+  };
+
+  const handleTokenUsageClick = () => {
+    setCurrentView('token-usage');
+  };
+
+  const handleTipsAndTricksClick = () => {
+    setCurrentView('tips-tricks');
+  };
+
   const handleSubscriptionUpgrade = (tier: 'starter' | 'pro') => {
     usageTracker.upgradeSubscription(tier);
     setCurrentView('studio');
@@ -58,6 +73,9 @@ const AppContent: React.FC = () => {
           onAboutClick={handleAboutClick}
           onLoginClick={handleLoginClick}
           onProfileClick={handleProfileClick}
+          onBackgroundSwapClick={handleBackgroundSwapClick}
+          onTokenUsageClick={handleTokenUsageClick}
+          onTipsAndTricksClick={handleTipsAndTricksClick}
         />
       ) : currentView === 'pricing' ? (
         <PricingPage onBackToStudio={handleBackToStudio} onSubscriptionUpgrade={handleSubscriptionUpgrade} />
@@ -67,6 +85,12 @@ const AppContent: React.FC = () => {
         <LoginPage onBackToStudio={handleBackToStudio} />
       ) : currentView === 'profile' ? (
         <UserProfile onClose={() => setCurrentView('studio')} />
+      ) : currentView === 'background-swap' ? (
+        <BackgroundSwapPage onBackToStudio={handleBackToStudio} />
+      ) : currentView === 'token-usage' ? (
+        <TokenUsagePage onBackToStudio={handleBackToStudio} />
+      ) : currentView === 'tips-tricks' ? (
+        <TipsAndTricksPage onBackToStudio={handleBackToStudio} />
       ) : null}
     </div>
   );

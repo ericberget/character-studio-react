@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { LogIn, Loader2 } from 'lucide-react'
 
@@ -7,9 +7,16 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onBackToStudio }) => {
-  const { signInWithGoogle } = useAuth()
+  const { user, signInWithGoogle } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Redirect to studio after successful login
+  useEffect(() => {
+    if (user) {
+      onBackToStudio()
+    }
+  }, [user, onBackToStudio])
 
   const handleGoogleSignIn = async () => {
     setLoading(true)

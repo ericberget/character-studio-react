@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Mail, Linkedin, Github } from 'lucide-react';
+import { ArrowLeft, Mail, Linkedin, Globe } from 'lucide-react';
 
 interface AboutPageProps {
   onBackToStudio: () => void;
@@ -32,13 +32,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onBackToStudio }) => {
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto px-4 py-16" style={{ maxWidth: '2000px' }}>
+      <div className="mx-auto px-4 py-16" style={{ maxWidth: '1200px' }}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Left Side - Text Content */}
           <div className="space-y-10 text-left">
             <div className="space-y-6">
               <h1 className="text-teal-400 text-xl font-medium">
-                Hi I'm Eric. I'm a Creative Director and Learning Experience Designer.
+                Hi, I'm Eric. I'm an award-winning Director of Creative Learning Experience Design with 13+ years creating custom eLearning that engages, motivates, and delights. I thrive on the challenge of sparking joy in learning through the power of story and dynamic visual design.
               </h1>
             </div>
 
@@ -49,13 +49,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onBackToStudio }) => {
                 </h3>
                 <div className="space-y-6">
                   <p className="text-gray-300 text-lg leading-relaxed">
-                    Character Studio was born from my passion for creating compelling characters in Articulate Storyline. Over the years, I've built hundreds of scenario activities, branching simulations, and interactive learning experiences. Each project required unique characters that could convey emotion, personality, and authenticity.
+                    Visual impact and compelling storytelling are essential for creating engaging eLearning experiences. Character Studio addresses the challenge of finding consistent, diverse character imagery for interactive learning scenarios.
                   </p>
                   <p className="text-gray-300 text-lg leading-relaxed">
-                    I found myself constantly searching for the perfect character images - ones that matched the tone, style, and diversity needed for modern learning experiences. Traditional stock photos felt generic and disconnected from the learning context. That's when I realized there had to be a better way.
-                  </p>
-                  <p className="text-gray-300 text-lg leading-relaxed">
-                    Character Studio leverages AI to transform any reference photo into custom characters across multiple art styles and poses. Whether you need professional business characters, diverse learners, or stylized illustrations, Character Studio helps you create the perfect characters for your learning scenarios.
+                    This AI-powered tool transforms reference photos into custom characters across multiple art styles and poses, helping learning designers create professional character sets that enhance learner engagement and scenario authenticity.
                   </p>
                 </div>
               </div>
@@ -92,13 +89,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onBackToStudio }) => {
                   LinkedIn
                 </a>
                 <a
-                  href="https://github.com/ericberget"
+                  href="https://ericberget.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors duration-200"
                 >
-                  <Github className="w-4 h-4" />
-                  GitHub
+                  <Globe className="w-4 h-4" />
+                  Website
                 </a>
               </div>
             </div>
@@ -106,17 +103,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onBackToStudio }) => {
 
           {/* Right Side - Portrait */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative">
-              <div className="w-96 h-[500px] bg-gray-800 rounded-2xl p-6 shadow-2xl">
-                <img 
-                  src="/images/about-me.jpg" 
-                  alt="Eric Berget" 
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-              {/* Decorative elements */}
-              <div className="absolute -top-6 -right-6 w-12 h-12 bg-yellow-400 rounded-full opacity-20"></div>
-              <div className="absolute -bottom-6 -left-6 w-8 h-8 bg-teal-400 rounded-full opacity-20"></div>
+            <div className="w-96 h-[500px] bg-gray-800 rounded-2xl p-6 shadow-2xl">
+              <img 
+                src="/images/about-me.jpg" 
+                alt="Eric Berget" 
+                className="w-full h-full object-cover rounded-lg"
+              />
             </div>
           </div>
         </div>

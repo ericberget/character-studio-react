@@ -91,13 +91,8 @@ export class UsageTracker {
   }
 
   canGenerate(): boolean {
-    const usage = this.getUserUsage();
-    
-    if (usage.subscriptionTier && usage.subscriptionTier !== 'free') {
-      return true; // Paid subscription
-    }
-    
-    return usage.freeGenerationsUsed < usage.freeGenerationsLimit;
+    // Free trial restrictions removed - always allow generation
+    return true;
   }
 
   recordGeneration(): void {

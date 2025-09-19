@@ -35,17 +35,6 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
         <h3 className="text-lg font-medium text-yellow-400 tracking-wider">
           Select Pose to Emulate
         </h3>
-        <div className="flex items-center gap-3">
-          {onUseReferencePose && hasReferenceImage && (
-            <button
-              onClick={onUseReferencePose}
-              className="btn-secondary text-xs bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700"
-              title="Generate character in the same pose as your reference photo"
-            >
-              Use Pose from Reference
-            </button>
-          )}
-        </div>
       </div>
       
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
