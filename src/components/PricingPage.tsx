@@ -23,7 +23,7 @@ const pricingTiers: PricingTier[] = [
     tokens: 100,
     features: [
       '100 Tokens (one-time)',
-      '10 Character Generations',
+      '50 Character Generations',
       '50 Custom Style Uploads',
       'Community Support',
       'Standard Generation Speed'

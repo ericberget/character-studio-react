@@ -7,12 +7,21 @@ interface UserProfileProps {
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
-  const { user, profile, signOut } = useAuth()
+  const { user, profile, signOut, updateProfile } = useAuth()
   const [showSettings, setShowSettings] = useState(false)
 
   const handleSignOut = async () => {
     await signOut()
     onClose()
+  }
+
+  // Temporary function to update free generation limit
+  const handleUpdateLimit = async () => {
+    if (profile) {
+      await updateProfile({ freeGenerationsLimit: 50 })
+      alert('Free generation limit updated to 50!')
+      window.location.reload()
+    }
   }
 
   const getSubscriptionBadge = () => {
@@ -194,6 +203,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                 <p className="text-sm text-gray-400">
                   Account settings and preferences will be available soon.
                 </p>
+                <button
+                  onClick={handleUpdateLimit}
+                  className="w-full flex items-center justify-center p-2 bg-green-900/20 hover:bg-green-900/30 border border-green-800 rounded-lg transition-colors text-green-400 text-sm"
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  Update to 50 Free Generations
+                </button>
               </div>
             )}
 

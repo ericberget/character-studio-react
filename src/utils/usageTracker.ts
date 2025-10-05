@@ -10,7 +10,7 @@ interface UserUsage {
   lastGenerationDate: string;
 }
 
-const FREE_GENERATIONS_LIMIT = 10;
+const FREE_GENERATIONS_LIMIT = 50;
 
 export class UsageTracker {
   private static instance: UsageTracker;
