@@ -24,11 +24,10 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
   customPoses = [],
   className
 }) => {
-  // const [isExpanded, setIsExpanded] = useState(false);
-  
   // Show all poses by default (commenting out expand functionality for now)
   const posesToShow = poses; // isExpanded ? poses : poses.slice(0, 12);
   // const hasMorePoses = poses.length > 12;
+  
   return (
     <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">

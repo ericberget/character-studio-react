@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { User, LogOut, Settings, Crown, Zap, Award, Calendar, CreditCard } from 'lucide-react'
+import { User, LogOut, Settings, Zap, Award, CreditCard } from 'lucide-react'
 
 interface UserProfileProps {
   onClose: () => void

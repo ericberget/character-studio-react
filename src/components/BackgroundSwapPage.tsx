@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Sparkles, Info, AlertCircle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Sparkles, Info, CheckCircle } from 'lucide-react';
 import { ImageUpload } from './ImageUpload';
 import { UsageDisplay } from './UsageDisplay';
 import { GenerationProgress } from './GenerationProgress';
