@@ -30,10 +30,9 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
   const [swappedCharacters, setSwappedCharacters] = useState<GeneratedCharacter[]>([]);
   const [progress, setProgress] = useState<ProgressType>({
     isLoading: false,
-    currentStep: 0,
-    totalSteps: 0,
-    currentPose: '',
-    message: ''
+    current: 0,
+    total: 0,
+    status: ''
   });
   
   // Message state
@@ -57,28 +56,9 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
   };
 
   // Handle character image upload
-  const handleCharacterImageSelect = (file: File) => {
-    setCharacterImage(file);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setCharacterPreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
   const handleCharacterImageRemove = () => {
     setCharacterImage(null);
     setCharacterPreview('');
-  };
-
-  // Handle background image upload
-  const handleBackgroundImageSelect = (file: File) => {
-    setBackgroundImage(file);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setBackgroundPreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleBackgroundImageRemove = () => {
@@ -109,10 +89,9 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
 
     setProgress({
       isLoading: true,
-      currentStep: 1,
-      totalSteps: 1,
-      currentPose: 'Background Swap',
-      message: 'Swapping background with Nano Banana...'
+      current: 1,
+      total: 1,
+      status: 'Swapping background with Nano Banana...'
     });
 
     setSwappedCharacters([]);
@@ -156,13 +135,13 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
             emoji: '🖼️'
           },
           timestamp: Date.now(),
-          artStyle: 'custom'
+          prompt: enhancedPrompt
         };
 
         setSwappedCharacters([swappedCharacter]);
         
         // Track usage
-        usageTracker.recordGeneration(1);
+        usageTracker.recordGeneration();
         
         showMessage('Background swap completed successfully!', 'success');
         
@@ -182,10 +161,9 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
     } finally {
       setProgress({
         isLoading: false,
-        currentStep: 0,
-        totalSteps: 0,
-        currentPose: '',
-        message: ''
+        current: 0,
+        total: 0,
+        status: ''
       });
     }
   };
@@ -242,6 +220,7 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
           
           {user && profile && (
             <UsageDisplay 
+              onUpgradeClick={() => {}}
               className="mx-auto mb-6 max-w-[493px] md:max-w-[563px]"
             />
           )}
@@ -258,11 +237,13 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
                   Upload Character Image
                 </h3>
                 <ImageUpload
-                  onImageSelect={handleCharacterImageSelect}
+                  onImageSelect={(file, preview) => {
+                    setCharacterImage(file);
+                    setCharacterPreview(preview);
+                  }}
                   preview={characterPreview}
                   onRemove={handleCharacterImageRemove}
                   className="aspect-square"
-                  placeholder="Upload your character image"
                 />
               </div>
 
@@ -272,11 +253,13 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
                   Upload Background Image
                 </h3>
                 <ImageUpload
-                  onImageSelect={handleBackgroundImageSelect}
+                  onImageSelect={(file, preview) => {
+                    setBackgroundImage(file);
+                    setBackgroundPreview(preview);
+                  }}
                   preview={backgroundPreview}
                   onRemove={handleBackgroundImageRemove}
                   className="aspect-square"
-                  placeholder="Upload your background image"
                 />
               </div>
             </div>

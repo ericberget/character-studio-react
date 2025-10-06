@@ -342,7 +342,7 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
                 <span className="text-xs text-gray-400 ml-auto flex items-center gap-1">
                   {profile?.displayName || user.displayName || 'User'}
                   {(profile?.subscriptionTier === 'starter' || profile?.subscriptionTier === 'pro') && (
-                    <Award className="w-3 h-3 text-yellow-400" title="Paid Subscriber" />
+                    <Award className="w-3 h-3 text-yellow-400" />
                   )}
                 </span>
               </button>

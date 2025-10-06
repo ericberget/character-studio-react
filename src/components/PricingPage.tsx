@@ -77,7 +77,7 @@ interface PricingPageProps {
   onSubscriptionUpgrade: (tier: 'starter' | 'pro') => void;
 }
 
-export const PricingPage: React.FC<PricingPageProps> = ({ onBackToStudio, onSubscriptionUpgrade }) => {
+export const PricingPage: React.FC<PricingPageProps> = ({ onBackToStudio, onSubscriptionUpgrade: _onSubscriptionUpgrade }) => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const { user, profile } = useAuth();

@@ -19,8 +19,8 @@ export const PoseSelector: React.FC<PoseSelectorProps> = ({
   selectedPoses,
   onPoseSelect,
   onCustomPoseUpload,
-  onUseReferencePose,
-  hasReferenceImage = false,
+  onUseReferencePose: _onUseReferencePose,
+  hasReferenceImage: _hasReferenceImage = false,
   customPoses = [],
   className
 }) => {
