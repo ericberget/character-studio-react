@@ -197,5 +197,17 @@ export const artStyles = [
     label: 'Minimal Flat', 
     image: '/artstyles/minimal-flat.jpg',
     stylePrompt: 'minimal flat design style, clean geometric shapes, simple color palette, modern flat illustration'
+  },
+  { 
+    value: 'cartoon-2', 
+    label: 'Modern Cartoon', 
+    image: '/artstyles/cartoon-2.jpg',
+    stylePrompt: 'modern cartoon style, clean lines, solid color blocks, simplified exaggerated aesthetic, contemporary animation look'
+  },
+  { 
+    value: 'watercolor-gestural', 
+    label: 'Gestural Watercolor', 
+    image: '/artstyles/watercolor-woman.jpg',
+    stylePrompt: 'gestural watercolor painting style, visible brushstrokes, soft blurred edges, translucent washes of color, half-finished artistic quality, expressive and ethereal, loose painterly technique'
   }
 ] as const;

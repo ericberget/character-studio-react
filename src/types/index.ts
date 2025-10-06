@@ -32,6 +32,9 @@ export type ArtStyle =
   | 'comic-style'
   | 'vintage-comic'
   | 'crafty-textured'
+  | 'minimal-flat'
+  | 'cartoon-2'
+  | 'watercolor-gestural'
   | 'custom';
 
 export interface ApiResponse {
