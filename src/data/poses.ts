@@ -187,12 +187,6 @@ export const artStyles = [
     stylePrompt: 'vintage comic book style, retro comic art, classic comic book illustration, nostalgic comic aesthetic'
   },
   { 
-    value: 'crafty-textured', 
-    label: 'Crafty Textured', 
-    image: '/artstyles/crafty-textured.jpg',
-    stylePrompt: 'crafty textured style, handmade art aesthetic, textured surface, artistic craft design'
-  },
-  { 
     value: 'minimal-flat', 
     label: 'Minimal Flat', 
     image: '/artstyles/minimal-flat.jpg',
@@ -208,6 +202,18 @@ export const artStyles = [
     value: 'watercolor-gestural', 
     label: 'Gestural Watercolor', 
     image: '/artstyles/watercolor-woman.jpg',
-    stylePrompt: 'gestural watercolor painting style, visible brushstrokes, soft blurred edges, translucent washes of color, half-finished artistic quality, expressive and ethereal, loose painterly technique'
+    stylePrompt: 'gestural watercolor painting style, visible brushstrokes, soft blurred edges, translucent washes of color, half-finished artistic quality, expressive and ethereal, loose painterly technique, watercolor, very loose, light, watery paint work, gestural lines similar to reference image'
+  },
+  { 
+    value: 'vector-profile', 
+    label: 'Vector Profile Portrait', 
+    image: '/artstyles/vectorillustration-realistic.jpg',
+    stylePrompt: 'stylized vector illustration style, painted profile portrait, chest-up composition, sharp angular lines, distinct color blocks for shading, high contrast lighting, strong black outlines, geometric hard-shadow shading with solid color transitions, modern graphic illustration aesthetic, clean vector-like appearance with subtle brushstroke texture, professional profile picture style'
+  },
+  { 
+    value: 'circle-profile', 
+    label: 'Circle Profile', 
+    image: '/artstyles/circle-profile.jpg',
+    stylePrompt: 'convert this photograph into a stylized illustrated portrait, transform realistic photo into painted illustration style, artistic interpretation with visible brushstrokes, painterly technique, stylized rendering not photorealistic, illustrated character design aesthetic, hand-painted appearance, artistic portrait illustration, remove photographic realism and replace with illustrated art style, painted illustration with artistic brushwork, stylized features with artistic interpretation, circular background behind character, chest-up composition, professional illustrated profile picture, illustrated art style not photography'
   }
 ] as const;

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { LandingPage } from './components/LandingPage';
 import { CharacterStudio } from './components/CharacterStudio';
 import { PricingPage } from './components/PricingPage';
 import { AboutPage } from './components/AboutPage';
 import { LoginPage } from './components/LoginPage';
 import { UserProfile } from './components/UserProfile';
 import { BackgroundSwapPage } from './components/BackgroundSwapPage';
+import { InfographicMaker } from './components/InfographicMaker';
+import { ThumbnailGenerator } from './components/ThumbnailGenerator';
 import { TokenUsagePage } from './components/TokenUsagePage';
 import { TipsAndTricksPage } from './components/TipsAndTricksPage';
 import { PaymentSuccess } from './components/PaymentSuccess';
@@ -12,11 +15,11 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { usageTracker } from './utils/usageTracker';
 import './App.css';
 
-type AppView = 'studio' | 'pricing' | 'about' | 'login' | 'profile' | 'background-swap' | 'token-usage' | 'tips-tricks' | 'payment-success';
+type AppView = 'landing' | 'studio' | 'pricing' | 'about' | 'login' | 'profile' | 'background-swap' | 'infographic-maker' | 'thumbnail-generator' | 'token-usage' | 'tips-tricks' | 'payment-success';
 
 const AppContent: React.FC = () => {
   const { profile } = useAuth();
-  const [currentView, setCurrentView] = useState<AppView>('studio');
+  const [currentView, setCurrentView] = useState<AppView>('landing');
 
   // Check if we're coming from a successful payment
   useEffect(() => {
@@ -42,6 +45,10 @@ const AppContent: React.FC = () => {
   };
 
   const handleBackToStudio = () => {
+    setCurrentView('landing');
+  };
+
+  const handleCharacterStudioClick = () => {
     setCurrentView('studio');
   };
 
@@ -61,6 +68,14 @@ const AppContent: React.FC = () => {
     setCurrentView('background-swap');
   };
 
+  const handleInfographicClick = () => {
+    setCurrentView('infographic-maker');
+  };
+
+  const handleThumbnailGeneratorClick = () => {
+    setCurrentView('thumbnail-generator');
+  };
+
   const handleTokenUsageClick = () => {
     setCurrentView('token-usage');
   };
@@ -71,7 +86,7 @@ const AppContent: React.FC = () => {
 
   const handleSubscriptionUpgrade = (tier: 'starter' | 'pro') => {
     usageTracker.upgradeSubscription(tier);
-    setCurrentView('studio');
+    setCurrentView('landing');
   };
 
   return (
@@ -82,13 +97,20 @@ const AppContent: React.FC = () => {
       backgroundRepeat: 'no-repeat',
       backgroundAttachment: 'fixed'
     }}>
-      {currentView === 'studio' ? (
+      {currentView === 'landing' ? (
+        <LandingPage 
+          onCharacterStudioClick={handleCharacterStudioClick}
+          onThumbnailGeneratorClick={handleThumbnailGeneratorClick}
+        />
+      ) : currentView === 'studio' ? (
         <CharacterStudio 
           onUpgradeClick={handleUpgradeClick} 
           onAboutClick={handleAboutClick}
           onLoginClick={handleLoginClick}
           onProfileClick={handleProfileClick}
           onBackgroundSwapClick={handleBackgroundSwapClick}
+          onInfographicClick={handleInfographicClick}
+          onThumbnailGeneratorClick={handleThumbnailGeneratorClick}
           onTokenUsageClick={handleTokenUsageClick}
           onTipsAndTricksClick={handleTipsAndTricksClick}
         />
@@ -99,9 +121,13 @@ const AppContent: React.FC = () => {
       ) : currentView === 'login' ? (
         <LoginPage onBackToStudio={handleBackToStudio} />
       ) : currentView === 'profile' ? (
-        <UserProfile onClose={() => setCurrentView('studio')} />
+        <UserProfile onClose={() => setCurrentView('landing')} />
       ) : currentView === 'background-swap' ? (
         <BackgroundSwapPage onBackToStudio={handleBackToStudio} />
+      ) : currentView === 'infographic-maker' ? (
+        <InfographicMaker onBackToStudio={handleBackToStudio} />
+      ) : currentView === 'thumbnail-generator' ? (
+        <ThumbnailGenerator onBackToStudio={handleBackToStudio} />
       ) : currentView === 'token-usage' ? (
         <TokenUsagePage onBackToStudio={handleBackToStudio} />
       ) : currentView === 'tips-tricks' ? (

@@ -22,11 +22,13 @@ interface CharacterStudioProps {
   onLoginClick: () => void;
   onProfileClick: () => void;
   onBackgroundSwapClick: () => void;
+  onInfographicClick: () => void;
+  onThumbnailGeneratorClick: () => void;
   onTokenUsageClick: () => void;
   onTipsAndTricksClick: () => void;
 }
 
-export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick, onAboutClick, onLoginClick, onProfileClick, onBackgroundSwapClick, onTokenUsageClick, onTipsAndTricksClick }) => {
+export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick, onAboutClick, onLoginClick, onProfileClick, onBackgroundSwapClick, onInfographicClick, onThumbnailGeneratorClick, onTokenUsageClick, onTipsAndTricksClick }) => {
   const { user, profile } = useAuth();
   const resultsRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -275,6 +277,26 @@ export const CharacterStudio: React.FC<CharacterStudioProps> = ({ onUpgradeClick
       {isMenuOpen && (
         <div className="fixed top-16 right-4 z-50 bg-transparent backdrop-blur-sm border border-white/20 rounded-lg p-2 min-w-48">
           <div className="space-y-1">
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                onInfographicClick();
+              }}
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3 header-font font-bold"
+            >
+              <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+              Infographic Maker
+            </button>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                onThumbnailGeneratorClick();
+              }}
+              className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors duration-200 flex items-center gap-3 header-font font-bold"
+            >
+              <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+              Thumbnail Generator
+            </button>
             <button
               onClick={() => {
                 setIsMenuOpen(false);

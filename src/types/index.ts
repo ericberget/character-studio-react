@@ -50,3 +50,28 @@ export interface GenerationProgress {
   status: string;
   isLoading: boolean;
 }
+
+// Thumbnail Generator Types
+export interface ThumbnailStyle {
+  id: string;
+  name: string;
+  description: string;
+  promptModifier: string;
+  icon: string;
+  color: string;
+}
+
+export interface GeneratedThumbnail {
+  id: string;
+  url: string;
+  prompt: string;
+  timestamp: number;
+}
+
+export interface UploadedImage {
+  id: string;
+  file: File;
+  previewUrl: string;
+  base64: string;
+  mimeType: string;
+}
