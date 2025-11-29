@@ -17,9 +17,67 @@ import './App.css';
 
 type AppView = 'landing' | 'studio' | 'pricing' | 'about' | 'login' | 'profile' | 'background-swap' | 'infographic-maker' | 'thumbnail-generator' | 'token-usage' | 'tips-tricks' | 'payment-success';
 
+// Map URL hashes to views
+const hashToView: Record<string, AppView> = {
+  '#thumbinator': 'thumbnail-generator',
+  '#thumbnail-generator': 'thumbnail-generator',
+  '#thumbgen': 'thumbnail-generator',
+  '#studio': 'studio',
+  '#character-studio': 'studio',
+  '#pricing': 'pricing',
+  '#about': 'about',
+  '#login': 'login',
+  '#profile': 'profile',
+  '#background-swap': 'background-swap',
+  '#infographic': 'infographic-maker',
+  '#tips': 'tips-tricks',
+};
+
+// Map views back to hashes (for updating URL)
+const viewToHash: Partial<Record<AppView, string>> = {
+  'thumbnail-generator': '#thumbinator',
+  'studio': '#studio',
+  'pricing': '#pricing',
+  'about': '#about',
+  'login': '#login',
+  'profile': '#profile',
+  'background-swap': '#background-swap',
+  'infographic-maker': '#infographic',
+  'tips-tricks': '#tips',
+};
+
 const AppContent: React.FC = () => {
   const { profile } = useAuth();
   const [currentView, setCurrentView] = useState<AppView>('landing');
+
+  // Handle URL hash navigation
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash && hashToView[hash]) {
+        setCurrentView(hashToView[hash]);
+      }
+    };
+
+    // Check hash on initial load
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Update URL hash when view changes
+  useEffect(() => {
+    const newHash = viewToHash[currentView];
+    if (newHash) {
+      // Update hash without triggering scroll
+      window.history.replaceState(null, '', newHash);
+    } else if (currentView === 'landing') {
+      // Clear hash when going back to landing
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, [currentView]);
 
   // Check if we're coming from a successful payment
   useEffect(() => {
