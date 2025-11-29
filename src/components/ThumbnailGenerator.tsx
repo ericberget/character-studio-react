@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, Wand2, Type, Image as ImageIcon, Download, RefreshCw, Edit2, ArrowLeft, Loader2, MessageSquarePlus, User } from 'lucide-react';
+import { X, Wand2, Type, Image as ImageIcon, Download, RefreshCw, Edit2, ArrowLeft, ArrowRight, Loader2, MessageSquarePlus, User, Sparkles } from 'lucide-react';
 import { generateThumbnail, refineThumbnail } from '../services/gemini';
 import type { GeneratedThumbnail } from '../types';
 
@@ -269,17 +269,12 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-3">
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-200"></div>
-                <div className="relative w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center ring-1 ring-white/10">
-                  <ImageIcon className="w-5 h-5 text-yellow-400" />
-                </div>
+              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center border border-yellow-500/30">
+                <ImageIcon className="w-5 h-5 text-yellow-400" />
               </div>
-              <div>
-                <h1 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                  ThumbGen <span className="px-1.5 py-0.5 rounded-md bg-yellow-500/20 text-xs font-semibold text-yellow-400 border border-yellow-500/30">AI</span>
-                </h1>
-              </div>
+              <span className="text-xl font-black text-white tracking-tight">
+                THUMBINATOR
+              </span>
             </div>
           </div>
         </div>
@@ -520,6 +515,54 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
 
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-white/5 mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            
+            {/* Left: Branding */}
+            <div className="flex flex-col items-center md:items-start gap-3">
+              <div className="flex items-center gap-2 opacity-60">
+                <div className="w-7 h-7 bg-gray-800 rounded-lg flex items-center justify-center border border-yellow-500/20">
+                  <ImageIcon className="w-4 h-4 text-yellow-400" />
+                </div>
+                <span className="text-base font-bold text-white tracking-tight">THUMBINATOR</span>
+              </div>
+              <p className="text-gray-500 text-sm text-center md:text-left">
+                AI-powered thumbnail generation for content creators
+              </p>
+            </div>
+
+            {/* Right: Character Studio CTA */}
+            <div className="flex items-center gap-4 bg-gradient-to-r from-gray-900/80 to-gray-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-4 pr-5 hover:border-yellow-500/30 transition-all group">
+              <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center ring-1 ring-yellow-500/20 group-hover:ring-yellow-500/40 transition-all">
+                <Sparkles className="w-6 h-6 text-yellow-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-gray-400 mb-0.5">Also try</p>
+                <p className="text-white font-semibold">Character Studio</p>
+              </div>
+              <button
+                onClick={onBackToStudio}
+                className="flex items-center gap-1.5 text-yellow-400 hover:text-yellow-300 text-sm font-medium group-hover:gap-2.5 transition-all"
+              >
+                Try it <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom */}
+          <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-gray-600 text-xs">
+              Powered by Google Gemini AI
+            </p>
+            <p className="text-gray-600 text-xs">
+              © {new Date().getFullYear()} Character Studio. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
