@@ -430,7 +430,9 @@ export const generateThumbnail = async (
   title: string,
   description: string,
   stylePrompt: string,
-  referenceImages: ThumbnailReferenceImage[]
+  referenceImages: ThumbnailReferenceImage[],
+  styleReference?: ThumbnailReferenceImage,
+  inspirationWeight?: 'low' | 'medium' | 'high'
 ): Promise<ApiResponse> => {
   try {
     const ai = getNanoBananaAI();
@@ -438,35 +440,78 @@ export const generateThumbnail = async (
     const model = getImageModel();
     
     // Construct the prompt - strongly emphasize 16:9 widescreen dimensions
+    const getInspirationInstruction = () => {
+      if (!styleReference) return '';
+      
+      const weight = inspirationWeight || 'medium';
+      
+      if (weight === 'low') {
+        return `
+        STYLE REFERENCE IMAGE PROVIDED (Low Inspiration):
+        - A style reference thumbnail has been provided for loose inspiration
+        - Take general inspiration from the color palette and mood, but feel free to be creative
+        - Use it as a starting point, not a strict guide
+        - You have creative freedom to interpret the style loosely
+        `;
+      } else if (weight === 'high') {
+        return `
+        STYLE REFERENCE IMAGE PROVIDED (High Inspiration - Recreate):
+        - A style reference thumbnail has been provided - CLOSELY recreate its visual style
+        - Match the exact color grading, lighting style, and effects as closely as possible
+        - Replicate the text treatment, typography style, and graphic element placement
+        - Copy the composition approach and overall aesthetic precisely
+        - This should look like it belongs in the same series as the reference
+        `;
+      } else {
+        return `
+        STYLE REFERENCE IMAGE PROVIDED (Medium Inspiration):
+        - A style reference thumbnail has been provided - match its key visual elements
+        - Capture the color palette, lighting mood, and general aesthetic
+        - Apply similar text treatment and graphic style
+        - Balance between matching the reference and adapting to the new content
+        `;
+      }
+    };
+    
+    const styleReferenceInstruction = getInspirationInstruction();
+
     const textPrompt = `
-      Generate a WIDESCREEN YouTube thumbnail. OUTPUT MUST BE 16:9 ASPECT RATIO.
+      MANDATORY OUTPUT FORMAT: Generate a WIDESCREEN 16:9 YouTube thumbnail.
+      
+      ⚠️ CRITICAL DIMENSION RULES - READ FIRST:
+      - Output image MUST be exactly 16:9 aspect ratio (1280x720 or 1920x1080)
+      - IGNORE the dimensions/orientation of any uploaded reference photos
+      - Reference photos are ONLY for extracting the person's face/likeness OR visual style
+      - Even if the input photo is PORTRAIT/VERTICAL, output MUST be LANDSCAPE/HORIZONTAL
+      - Width MUST be approximately 1.78 times the height
+      - This is a WIDE horizontal rectangle, never square, never portrait
       
       VIDEO TITLE TEXT TO DISPLAY: "${title}"
       
       ${description ? `ADDITIONAL CONTEXT: ${description}` : ''}
       
-      VISUAL STYLE: ${stylePrompt}
+      ${styleReference ? styleReferenceInstruction : `VISUAL STYLE: ${stylePrompt}`}
       
-      CRITICAL - IMAGE DIMENSIONS:
-      - Output MUST be 16:9 widescreen (like 1280x720 or 1920x1080)
-      - Width MUST be 1.78 times the height
-      - This is a horizontal rectangle, NOT a square
-      - Standard YouTube thumbnail format
-      
-      COMPOSITION FOR WIDESCREEN:
-      - If using a face reference, place the person on the LEFT or RIGHT third of the wide frame
-      - Title text goes on the opposite side
-      - Use the full width of the 16:9 canvas
-      - DO NOT crop to square - maintain widescreen composition
+      COMPOSITION FOR 16:9 WIDESCREEN CANVAS:
+      - Place the person (from reference) on the LEFT or RIGHT third of the wide frame
+      - Title text goes on the opposite side with large, bold lettering
+      - Use the FULL WIDTH of the 16:9 canvas - no cropping to match input photo
+      - The reference photo provides ONLY the face to use, NOT the framing or dimensions
     `;
 
     const parts: any[] = [];
 
-    // Add reference images first
+    // Add face reference images first
     referenceImages.forEach((img, index) => {
       parts.push(prepareImageData(img.base64, img.mimeType));
-      console.log(`📷 Added reference image #${index + 1}`);
+      console.log(`📷 Added face reference image #${index + 1}`);
     });
+
+    // Add style reference image if provided
+    if (styleReference) {
+      parts.push(prepareImageData(styleReference.base64, styleReference.mimeType));
+      console.log(`🎨 Added style reference image`);
+    }
 
     // Add text prompt
     parts.push({ text: textPrompt });
@@ -540,10 +585,13 @@ export const refineThumbnail = async (
     
     const textPrompt = `
       Edit this YouTube thumbnail based on the following instruction.
-      CRITICAL: Output MUST remain 16:9 widescreen aspect ratio (1280x720 or similar).
-      Do NOT change the dimensions to square or portrait.
       
-      INSTRUCTION: ${instruction}
+      ⚠️ MANDATORY: Output MUST remain exactly 16:9 widescreen aspect ratio (1280x720 or 1920x1080).
+      - Keep the same LANDSCAPE/HORIZONTAL orientation as the input
+      - Do NOT change dimensions to square or portrait under any circumstances
+      - Maintain the wide YouTube thumbnail format
+      
+      EDIT INSTRUCTION: ${instruction}
     `;
 
     const parts: any[] = [

@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { X, Wand2, Type, Image as ImageIcon, Download, RefreshCw, Edit2, ArrowLeft, ArrowRight, Loader2, MessageSquarePlus, User, Sparkles } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { X, Wand2, Type, Image as ImageIcon, Download, RefreshCw, Edit2, ArrowLeft, ArrowRight, Loader2, MessageSquarePlus, User, Sparkles, Camera, Upload } from 'lucide-react';
 import { generateThumbnail, refineThumbnail } from '../services/gemini';
 import type { GeneratedThumbnail } from '../types';
 
@@ -69,6 +69,21 @@ interface FaceUpload {
   mimeType: string;
 }
 
+interface StyleReference {
+  previewUrl: string;
+  base64: string;
+  mimeType: string;
+}
+
+type InspirationWeight = 'low' | 'medium' | 'high';
+
+interface SavedPersona {
+  name: string;
+  previewUrl: string;
+  base64: string;
+  mimeType: string;
+}
+
 interface ThumbnailGeneratorProps {
   onBackToStudio: () => void;
 }
@@ -77,7 +92,7 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
   // App State
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedStyleId, setSelectedStyleId] = useState<string>(QUICK_STYLES[0].id);
+  const [selectedStyleId, setSelectedStyleId] = useState<string | null>(null);
   const [faceUpload, setFaceUpload] = useState<FaceUpload | null>(null);
   
   const [generatedImages, setGeneratedImages] = useState<GeneratedThumbnail[]>([]);
@@ -90,7 +105,134 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
   const [refineInstruction, setRefineInstruction] = useState('');
   const [isRefining, setIsRefining] = useState(false);
   
+  // Style reference state
+  const [styleReference, setStyleReference] = useState<StyleReference | null>(null);
+  const [inspirationWeight, setInspirationWeight] = useState<InspirationWeight>('medium');
+  
+  // Persona state - saved faces for reuse
+  const [savedPersonas, setSavedPersonas] = useState<SavedPersona[]>([]);
+  const [showPersonaMenu, setShowPersonaMenu] = useState(false);
+  
+  // Camera state
+  const [showCamera, setShowCamera] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  
   const faceInputRef = useRef<HTMLInputElement>(null);
+  const styleInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Load saved personas from localStorage on mount
+  React.useEffect(() => {
+    const stored = localStorage.getItem('thumbinator-personas');
+    if (stored) {
+      try {
+        setSavedPersonas(JSON.parse(stored));
+      } catch (e) {
+        console.error('Failed to load personas:', e);
+      }
+    }
+  }, []);
+
+  // Save persona to localStorage
+  const saveCurrentFaceAsPersona = () => {
+    if (!faceUpload) return;
+    const name = prompt('Name this persona (e.g., "My Headshot"):');
+    if (!name) return;
+    
+    const newPersona: SavedPersona = {
+      name,
+      previewUrl: faceUpload.previewUrl,
+      base64: faceUpload.base64,
+      mimeType: faceUpload.mimeType
+    };
+    
+    const updated = [...savedPersonas, newPersona];
+    setSavedPersonas(updated);
+    localStorage.setItem('thumbinator-personas', JSON.stringify(updated));
+  };
+
+  // Load a saved persona
+  const loadPersona = (persona: SavedPersona) => {
+    setFaceUpload({
+      previewUrl: persona.previewUrl,
+      base64: persona.base64,
+      mimeType: persona.mimeType
+    });
+    setShowPersonaMenu(false);
+  };
+
+  // Delete a persona
+  const deletePersona = (index: number) => {
+    const updated = savedPersonas.filter((_, i) => i !== index);
+    setSavedPersonas(updated);
+    localStorage.setItem('thumbinator-personas', JSON.stringify(updated));
+  };
+
+  // Camera functions
+  const startCamera = useCallback(async () => {
+    setCameraError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      setCameraStream(stream);
+      setShowCamera(true);
+      
+      // Wait for video element to be available
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      }, 100);
+    } catch (err) {
+      console.error('Camera error:', err);
+      setCameraError('Unable to access camera. Please check permissions.');
+    }
+  }, []);
+
+  const stopCamera = useCallback(() => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setShowCamera(false);
+    setCameraError(null);
+  }, [cameraStream]);
+
+  const capturePhoto = useCallback(() => {
+    if (!videoRef.current || !canvasRef.current) return;
+    
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    
+    // Set canvas size to match video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Draw the video frame to canvas
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    // Mirror the image (since front camera is mirrored)
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0);
+    
+    // Convert to base64
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const base64 = dataUrl.split(',')[1];
+    
+    setFaceUpload({
+      previewUrl: dataUrl,
+      base64: base64,
+      mimeType: 'image/jpeg'
+    });
+    
+    // Stop the camera
+    stopCamera();
+  }, [stopCamera]);
 
   // Handle face upload
   const handleFaceUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,6 +242,23 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
       reader.onloadend = () => {
         const base64Full = reader.result as string;
         setFaceUpload({
+          previewUrl: URL.createObjectURL(file),
+          base64: base64Full.split(',')[1],
+          mimeType: file.type
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle style reference upload
+  const handleStyleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Full = reader.result as string;
+        setStyleReference({
           previewUrl: URL.createObjectURL(file),
           base64: base64Full.split(',')[1],
           mimeType: file.type
@@ -126,11 +285,18 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
         refs.push({ base64: faceUpload.base64, mimeType: faceUpload.mimeType });
       }
 
+      // Prepare style reference if uploaded
+      const styleRef = styleReference 
+        ? { base64: styleReference.base64, mimeType: styleReference.mimeType }
+        : undefined;
+
       const result = await generateThumbnail(
         title, 
         description,
         style?.promptModifier || '',
-        refs
+        refs,
+        styleRef,
+        styleReference ? inspirationWeight : undefined
       );
       
       if (result.success && result.imageUrl) {
@@ -258,6 +424,58 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
         </div>
       )}
 
+      {/* Camera Modal */}
+      {showCamera && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-700">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Camera className="w-5 h-5 text-yellow-400" />
+                Take a Photo
+              </h3>
+              <button 
+                onClick={stopCamera}
+                className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-4">
+              {/* Video Preview */}
+              <div className="relative rounded-xl overflow-hidden bg-black aspect-video mb-4">
+                <video 
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover scale-x-[-1]"
+                />
+                {/* Overlay guide */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="w-32 h-32 border-2 border-white/30 rounded-full" />
+                </div>
+              </div>
+              
+              {/* Hidden canvas for capture */}
+              <canvas ref={canvasRef} className="hidden" />
+              
+              <p className="text-center text-gray-400 text-sm mb-4">
+                Position your face in the center and click capture
+              </p>
+              
+              <button
+                onClick={capturePhoto}
+                className="w-full py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
+              >
+                <Camera className="w-6 h-6" />
+                Capture Photo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="sticky top-0 z-30 w-full border-b border-white/10 bg-gray-950/60 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -270,7 +488,7 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
             </button>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center border border-yellow-500/30">
-                <ImageIcon className="w-5 h-5 text-yellow-400" />
+                  <ImageIcon className="w-5 h-5 text-yellow-400" />
               </div>
               <span className="text-xl font-black text-white tracking-tight">
                 THUMBINATOR
@@ -311,13 +529,58 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
 
               <div className="h-px bg-white/5 my-6" />
 
-              {/* 2. Face Upload */}
+              {/* 2. Face Upload / Persona */}
               <div className="space-y-4">
+                <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-yellow-400 font-bold uppercase tracking-wider text-xs">
-                  <User className="w-4 h-4" /> Face Photo (Optional)
+                    <User className="w-4 h-4" /> Face / Persona
+                  </div>
+                  {savedPersonas.length > 0 && (
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowPersonaMenu(!showPersonaMenu)}
+                        className="text-xs text-gray-400 hover:text-yellow-400 transition-colors flex items-center gap-1"
+                      >
+                        <User className="w-3 h-3" />
+                        Saved ({savedPersonas.length})
+                      </button>
+                      {showPersonaMenu && (
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 border border-gray-700 rounded-xl shadow-xl z-20 overflow-hidden">
+                          <div className="p-2 border-b border-gray-700 text-xs text-gray-400 font-medium">
+                            Saved Personas
+                          </div>
+                          {savedPersonas.map((persona, idx) => (
+                            <div key={idx} className="flex items-center gap-2 p-2 hover:bg-gray-800 transition-colors">
+                              <img src={persona.previewUrl} alt={persona.name} className="w-8 h-8 rounded-lg object-cover" />
+                              <button
+                                onClick={() => loadPersona(persona)}
+                                className="flex-1 text-left text-sm text-white truncate"
+                              >
+                                {persona.name}
+                              </button>
+                              <button
+                                onClick={() => deletePersona(idx)}
+                                className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <p className="text-xs text-gray-500 -mt-2">Upload a photo of the person to feature in the thumbnail</p>
+                <p className="text-xs text-gray-500 -mt-2">Take a photo or upload from device</p>
                 
+                {/* Camera Error */}
+                {cameraError && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs">
+                    {cameraError}
+                  </div>
+                )}
+                
+                <div className="flex items-start gap-3">
                 {faceUpload ? (
                   <div className="relative w-32 h-32 rounded-xl overflow-hidden border-2 border-yellow-500/50 shadow-lg">
                     <img 
@@ -336,30 +599,143 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
                     </button>
                   </div>
                 ) : (
+                  <div className="flex gap-3">
+                    {/* Camera Button - Primary */}
+                    <button
+                      onClick={startCamera}
+                      className="w-28 h-28 rounded-xl border-2 border-yellow-500/30 bg-yellow-500/5 hover:border-yellow-500/60 hover:bg-yellow-500/10 transition-all flex flex-col items-center justify-center group"
+                    >
+                      <Camera className="w-8 h-8 text-yellow-400 group-hover:scale-110 transition-transform mb-2" />
+                      <span className="text-xs text-yellow-400 font-medium">Take Photo</span>
+                    </button>
+                    
+                    {/* Upload Button - Secondary */}
                   <button
                     onClick={() => faceInputRef.current?.click()}
-                    className="w-32 h-32 rounded-xl border-2 border-dashed border-white/20 hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all flex flex-col items-center justify-center group"
+                      className="w-28 h-28 rounded-xl border-2 border-dashed border-white/20 hover:border-gray-500 hover:bg-white/5 transition-all flex flex-col items-center justify-center group"
+                    >
+                      <Upload className="w-6 h-6 text-gray-500 group-hover:text-gray-400 transition-colors mb-2" />
+                      <span className="text-xs text-gray-500 group-hover:text-gray-400">Upload</span>
+                    </button>
+                  </div>
+                )}
+                
+                {/* Hidden file input */}
+                <input 
+                  type="file" 
+                  ref={faceInputRef} 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={handleFaceUpload}
+                />
+                  
+                {/* Save as Persona button */}
+                {faceUpload && (
+                  <button
+                    onClick={saveCurrentFaceAsPersona}
+                    className="px-3 py-2 text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-lg transition-colors border border-gray-700"
+                  >
+                    Save as Persona
+                  </button>
+                )}
+                </div>
+              </div>
+
+              <div className="h-px bg-white/5 my-6" />
+
+              {/* 3. Style Reference (Optional) */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-yellow-400 font-bold uppercase tracking-wider text-xs">
+                  <ImageIcon className="w-4 h-4" /> Style Reference (Optional)
+                </div>
+                <p className="text-xs text-gray-500 -mt-2">Upload a thumbnail you like to match its style</p>
+                
+                {styleReference ? (
+                  <div className="space-y-4">
+                    <div className="relative w-48 aspect-video rounded-xl overflow-hidden border-2 border-yellow-500/50 shadow-lg">
+                      <img 
+                        src={styleReference.previewUrl} 
+                        alt="Style reference" 
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-0 left-0 right-0 bg-black/70 text-white text-xs font-medium px-2 py-1">
+                        Style Ref
+                      </div>
+                      <button 
+                        onClick={() => setStyleReference(null)}
+                        className="absolute bottom-2 right-2 p-1.5 bg-black/60 hover:bg-red-500 rounded-full transition-colors"
+                      >
+                        <X className="w-3 h-3 text-white" />
+                      </button>
+                    </div>
+                    
+                    {/* Inspiration Weight */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                        <Sparkles className="w-3 h-3" /> Inspiration Weight
+                      </div>
+                      <div className="flex gap-2">
+                        {(['low', 'medium', 'high'] as InspirationWeight[]).map((weight) => (
+                          <button
+                            key={weight}
+                            onClick={() => setInspirationWeight(weight)}
+                            className={`
+                              flex-1 py-2 px-3 rounded-lg text-xs font-medium capitalize transition-all
+                              ${inspirationWeight === weight
+                                ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40'
+                                : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:border-gray-600'
+                              }
+                            `}
+                          >
+                            {weight}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-[10px] text-gray-600">
+                        {inspirationWeight === 'low' && 'Loosely inspired - more creative freedom'}
+                        {inspirationWeight === 'medium' && 'Balanced - captures key style elements'}
+                        {inspirationWeight === 'high' && 'Closely matched - recreates the look'}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => styleInputRef.current?.click()}
+                    className="w-48 aspect-video rounded-xl border-2 border-dashed border-white/20 hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all flex flex-col items-center justify-center group"
                   >
                     <input 
                       type="file" 
-                      ref={faceInputRef} 
+                      ref={styleInputRef} 
                       className="hidden" 
                       accept="image/*"
-                      onChange={handleFaceUpload}
+                      onChange={handleStyleUpload}
                     />
-                    <User className="w-8 h-8 text-gray-500 group-hover:text-yellow-400 transition-colors mb-2" />
-                    <span className="text-xs text-gray-500 group-hover:text-gray-400">Add Face</span>
+                    <ImageIcon className="w-8 h-8 text-gray-500 group-hover:text-yellow-400 transition-colors mb-2" />
+                    <span className="text-xs text-gray-500 group-hover:text-gray-400">Add Style Reference</span>
                   </button>
                 )}
               </div>
 
               <div className="h-px bg-white/5 my-6" />
 
-              {/* 3. Quick Style Selection */}
+              {/* 4. Quick Style Selection (Optional) */}
               <div className="space-y-4">
+                <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-yellow-400 font-bold uppercase tracking-wider text-xs">
-                  <Wand2 className="w-4 h-4" /> Quick Style
+                    <Wand2 className="w-4 h-4" /> Quick Style (Optional)
+                  </div>
+                  {selectedStyleId && (
+                    <button
+                      onClick={() => setSelectedStyleId(null)}
+                      className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
                 </div>
+                <p className="text-xs text-gray-500 -mt-2">
+                  {styleReference ? 'Style reference will be used instead if selected' : 'Select a preset style or leave empty for default'}
+                </p>
                 
                 <div className="grid grid-cols-2 gap-2">
                   {QUICK_STYLES.map((style) => {
@@ -367,7 +743,7 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
                     return (
                       <button
                         key={style.id}
-                        onClick={() => setSelectedStyleId(style.id)}
+                        onClick={() => setSelectedStyleId(isSelected ? null : style.id)}
                         className={`
                           px-3 py-2.5 rounded-xl border-2 transition-all duration-200 text-left
                           hover:scale-[1.01] active:scale-[0.99]
