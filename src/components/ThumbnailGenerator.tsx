@@ -499,6 +499,23 @@ export const ThumbnailGenerator: React.FC<ThumbnailGeneratorProps> = ({ onBackTo
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        {/* Under Construction Banner */}
+        <div className="mb-8 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4 flex items-center justify-center gap-3">
+          <div className="p-2 bg-yellow-500/20 rounded-lg">
+            <span className="text-xl">🚧</span>
+          </div>
+          <div className="text-center">
+            <h3 className="text-yellow-400 font-bold">Under Construction</h3>
+            <p className="text-gray-400 text-sm">
+              The Thumbinator is currently being upgraded with new features. Some functionality may be limited.
+            </p>
+          </div>
+          <div className="p-2 bg-yellow-500/20 rounded-lg">
+            <span className="text-xl">🚧</span>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           
           {/* Left Panel: Controls */}

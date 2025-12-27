@@ -157,12 +157,6 @@ export const artStyles = [
     stylePrompt: 'colored pencil drawing style, vibrant hand-drawn illustration, artistic colored pencil technique'
   },
   { 
-    value: 'claymation', 
-    label: 'Claymation Style', 
-    image: '/artstyles/claymation-style.jpg',
-    stylePrompt: 'claymation style, 3D clay animation look, stop-motion character design. Keep the character the same, make claymation, minimal detail'
-  },
-  { 
     value: 'realistic-painting', 
     label: 'Realistic Painting', 
     image: '/artstyles/realistic-painting-2.jpg',
@@ -194,9 +188,9 @@ export const artStyles = [
   },
   { 
     value: 'cartoon-2', 
-    label: 'Modern Cartoon', 
-    image: '/artstyles/cartoon-2.jpg',
-    stylePrompt: 'modern cartoon style, clean lines, solid color blocks, simplified exaggerated aesthetic, contemporary animation look'
+    label: 'Newspaper Sketch Cartoon', 
+    image: '/artstyles/newspaper-sketch-cartoon.jpg',
+    stylePrompt: 'newspaper editorial cartoon style, sketchy hand-drawn ink lines, loose expressive linework like political cartoons or New Yorker magazine illustrations, crosshatching for shading, imperfect hand-drawn quality, proper detailed hands with fingers not mittens, caricature style with exaggerated features, pen and ink illustration aesthetic, visible sketch lines, traditional editorial illustration look'
   },
   { 
     value: 'watercolor-gestural', 

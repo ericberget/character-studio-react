@@ -6,7 +6,7 @@ import { AboutPage } from './components/AboutPage';
 import { LoginPage } from './components/LoginPage';
 import { UserProfile } from './components/UserProfile';
 import { BackgroundSwapPage } from './components/BackgroundSwapPage';
-import { InfographicMaker } from './components/InfographicMaker';
+// import { InfographicMaker } from './components/InfographicMaker';
 import { ThumbnailGenerator } from './components/ThumbnailGenerator';
 import { TokenUsagePage } from './components/TokenUsagePage';
 import { TipsAndTricksPage } from './components/TipsAndTricksPage';
@@ -15,7 +15,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { usageTracker } from './utils/usageTracker';
 import './App.css';
 
-type AppView = 'landing' | 'studio' | 'pricing' | 'about' | 'login' | 'profile' | 'background-swap' | 'infographic-maker' | 'thumbnail-generator' | 'token-usage' | 'tips-tricks' | 'payment-success';
+type AppView = 'landing' | 'studio' | 'pricing' | 'about' | 'login' | 'profile' | 'background-swap' | 'thumbnail-generator' | 'token-usage' | 'tips-tricks' | 'payment-success';
 
 // Map URL hashes to views
 const hashToView: Record<string, AppView> = {
@@ -29,7 +29,6 @@ const hashToView: Record<string, AppView> = {
   '#login': 'login',
   '#profile': 'profile',
   '#background-swap': 'background-swap',
-  '#infographic': 'infographic-maker',
   '#tips': 'tips-tricks',
 };
 
@@ -42,7 +41,6 @@ const viewToHash: Partial<Record<AppView, string>> = {
   'login': '#login',
   'profile': '#profile',
   'background-swap': '#background-swap',
-  'infographic-maker': '#infographic',
   'tips-tricks': '#tips',
 };
 
@@ -126,10 +124,6 @@ const AppContent: React.FC = () => {
     setCurrentView('background-swap');
   };
 
-  const handleInfographicClick = () => {
-    setCurrentView('infographic-maker');
-  };
-
   const handleThumbnailGeneratorClick = () => {
     setCurrentView('thumbnail-generator');
   };
@@ -167,7 +161,6 @@ const AppContent: React.FC = () => {
           onLoginClick={handleLoginClick}
           onProfileClick={handleProfileClick}
           onBackgroundSwapClick={handleBackgroundSwapClick}
-          onInfographicClick={handleInfographicClick}
           onThumbnailGeneratorClick={handleThumbnailGeneratorClick}
           onTokenUsageClick={handleTokenUsageClick}
           onTipsAndTricksClick={handleTipsAndTricksClick}
@@ -182,8 +175,6 @@ const AppContent: React.FC = () => {
         <UserProfile onClose={() => setCurrentView('landing')} />
       ) : currentView === 'background-swap' ? (
         <BackgroundSwapPage onBackToStudio={handleBackToStudio} />
-      ) : currentView === 'infographic-maker' ? (
-        <InfographicMaker onBackToStudio={handleBackToStudio} />
       ) : currentView === 'thumbnail-generator' ? (
         <ThumbnailGenerator onBackToStudio={handleBackToStudio} />
       ) : currentView === 'token-usage' ? (
