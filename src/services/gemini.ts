@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+  import { GoogleGenAI } from '@google/genai';
 import type { ApiResponse } from '../types';
 
 // Initialize Nano Banana Pro (Gemini 3 Pro Image) with API key
@@ -196,8 +196,8 @@ export const swapBackgroundWithNanoBanana = async (
     const characterImageData = prepareImageData(characterBase64, 'image/jpeg');
     const backgroundImageData = prepareImageData(backgroundBase64, 'image/jpeg');
     
-    // Create the background swap instruction
-    const swapInstruction = customPrompt || `Take the character from the first image and place them in the background/setting from the second image. Keep the character exactly the same - same pose, same clothing, same appearance, same lighting on the character. Only change the background to match the second image. The character should look natural in the new environment while maintaining their original appearance and pose.`;
+    // Create the background swap instruction - prioritize cohesion and harmonization
+    const swapInstruction = customPrompt || `Composite the person/character from the first image into the setting/background from the second image. PRIORITY: Create a cohesive, harmonized final image where the subject and background look like they naturally belong together. Adjust the lighting, color grading, shadows, and atmosphere on the subject to match the background environment. The subject should adopt the visual style, lighting conditions, and color palette of the background scene. It's more important that the final image looks unified and natural than to perfectly preserve every detail of the original subject. Make the subject look like they were actually photographed or illustrated in this environment.`;
     
     const contents = [
       {

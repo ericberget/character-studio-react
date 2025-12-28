@@ -112,11 +112,11 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
         backgroundUrl = selectedPresetBackground;
       }
 
-      // Enhanced prompt with art direction
-      let enhancedPrompt = `Take the character from the first image and place them in the background/setting from the second image. Keep the character exactly the same - same pose, same clothing, same appearance, same lighting on the character. Only change the background to match the second image. The character should look natural in the new environment while maintaining their original appearance and pose.`;
+      // Enhanced prompt with art direction - prioritize cohesion and harmonization
+      let enhancedPrompt = `Composite the person/character from the first image into the setting/background from the second image. PRIORITY: Create a cohesive, harmonized final image where the subject and background look like they naturally belong together. Adjust the lighting, color grading, shadows, and atmosphere on the subject to match the background environment. The subject should adopt the visual style, lighting conditions, and color palette of the background scene. It's more important that the final image looks unified and natural than to perfectly preserve every detail of the original subject. Make the subject look like they were actually photographed or illustrated in this environment.`;
       
       if (artDirection.trim()) {
-        enhancedPrompt += ` IMPORTANT: Apply the following style/effect to the background only: "${artDirection.trim()}". The background should be modified according to this instruction while keeping the character unchanged.`;
+        enhancedPrompt += ` Additional direction: "${artDirection.trim()}". Apply this to the entire composition to enhance the cohesive look.`;
       }
 
       console.log('🍌 Starting background swap with enhanced prompt:', enhancedPrompt);
@@ -213,9 +213,12 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
               Back to Character Studio
             </button>
             <div className="h-6 w-px bg-gray-600" />
-            <h1 className="text-3xl font-bold text-white header-font">
-              Background Swap Studio
-            </h1>
+            <div>
+              <h1 className="text-3xl font-bold text-white header-font">
+                Background Swap Studio
+              </h1>
+              <p className="text-gray-400 text-sm mt-1">Harmonize subjects with new environments</p>
+            </div>
           </div>
           
           {user && profile && (
@@ -324,7 +327,7 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
                 id="artDirection"
                 value={artDirection}
                 onChange={(e) => setArtDirection(e.target.value)}
-                placeholder="Add specific instructions for the background swap... (e.g., 'Make background slightly blurred', 'Adjust lighting to match character', 'Add soft shadows')"
+                placeholder="Add specific instructions for the final composition... (e.g., 'Warm golden hour lighting', 'Cinematic color grading', 'Soft dreamy atmosphere', 'High contrast dramatic look')"
                 className="input-field resize-none h-[120px]"
               />
             </div>
@@ -393,25 +396,27 @@ export const BackgroundSwapPage: React.FC<BackgroundSwapPageProps> = ({ onBackTo
                 </button>
               </div>
               <div className="space-y-3 text-gray-300 text-sm">
-                <p><strong>Background Effects:</strong></p>
+                <p className="text-yellow-400/80 mb-2">The AI will harmonize lighting, colors, and style to create a cohesive final image.</p>
+                
+                <p><strong>Lighting & Atmosphere:</strong></p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>"Make background slightly blurred"</li>
-                  <li>"Add depth of field effect"</li>
-                  <li>"Soften background details"</li>
+                  <li>"Golden hour warm lighting"</li>
+                  <li>"Dramatic moody shadows"</li>
+                  <li>"Soft diffused daylight"</li>
                 </ul>
                 
-                <p><strong>Lighting Adjustments:</strong></p>
+                <p><strong>Color & Style:</strong></p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>"Adjust lighting to match character"</li>
-                  <li>"Add warm/cool lighting"</li>
-                  <li>"Create dramatic shadows"</li>
+                  <li>"Cinematic color grading"</li>
+                  <li>"Vintage film look"</li>
+                  <li>"High contrast dramatic"</li>
                 </ul>
                 
-                <p><strong>Style Matching:</strong></p>
+                <p><strong>Overall Feel:</strong></p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>"Match art style of character"</li>
-                  <li>"Make background more painterly"</li>
-                  <li>"Enhance colors to complement character"</li>
+                  <li>"Dreamy ethereal atmosphere"</li>
+                  <li>"Sharp professional look"</li>
+                  <li>"Painterly artistic style"</li>
                 </ul>
               </div>
             </div>
