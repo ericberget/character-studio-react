@@ -13,23 +13,16 @@ const getNanoBananaAI = () => {
   });
 };
 
-// Get the model name - try Pro first, fallback to preview
+// Get the model name for image generation
 const getImageModel = (): string => {
   // If user specifies a model in env, use that
   if (import.meta.env.VITE_GEMINI_MODEL) {
     return import.meta.env.VITE_GEMINI_MODEL;
   }
-  
-  // Try Pro model names first (for Gemini subscribers)
-  // Common Pro model names to try (in order of preference):
-  // - gemini-3.0-pro-image
-  // - gemini-3-pro-image  
-  // - gemini-2.5-flash-image-pro
-  
-  // For now, we'll use the preview model as default
-  // If you have a subscription, you can set VITE_GEMINI_MODEL in .env
-  // to use the Pro version (e.g., VITE_GEMINI_MODEL=gemini-3.0-pro-image)
-  return 'gemini-2.5-flash-image-preview';
+
+  // Use gemini-2.0-flash-exp for image generation
+  // Note: Nano Banana Pro may have a different model name - check AI Studio docs
+  return 'gemini-2.0-flash-exp';
 };
 
 // Convert file to base64
