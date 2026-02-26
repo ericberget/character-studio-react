@@ -20,9 +20,8 @@ const getImageModel = (): string => {
     return import.meta.env.VITE_GEMINI_MODEL;
   }
 
-  // Use gemini-2.0-flash-exp for image generation
-  // Note: Nano Banana Pro may have a different model name - check AI Studio docs
-  return 'gemini-2.0-flash-exp';
+  // Use Gemini 3 Pro Image for highest quality image generation
+  return 'gemini-3-pro-image-preview';
 };
 
 // Convert file to base64
